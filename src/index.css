@@ -29,6 +29,16 @@ body {
   padding-right: env(safe-area-inset-right);
 }
 
+/* number input의 +/- 스피너 숨김 — 좁은 셀에서 숫자 잘림 방지 */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
 /* iOS standalone에서 사용자 선택 비활성화 (홈화면 아이콘에서 열린 경우) */
 @media (display-mode: standalone) {
   body {

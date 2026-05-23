@@ -668,13 +668,13 @@ function CardTableEditor({
         </p>
       ) : (
         <div className="mt-3 overflow-x-auto">
-          <table className="w-full min-w-[640px] text-[12px]">
+          <table className="w-full min-w-[680px] text-[12px]">
             <thead className="bg-brand-grayLight/60 text-brand-gray">
               <tr className="text-left">
-                <th className="px-2 py-2 w-12">번호</th>
+                <th className="px-2 py-2 w-20">번호</th>
                 <th className="px-2 py-2">이름</th>
-                <th className="px-2 py-2 w-20">희귀도</th>
-                <th className="px-2 py-2 w-24 text-right">시세(원)</th>
+                <th className="px-2 py-2 w-24">희귀도</th>
+                <th className="px-2 py-2 w-28 text-right">시세(원)</th>
                 <th className="px-2 py-2">이미지 URL</th>
                 {editable && <th className="px-2 py-2 w-8" />}
               </tr>
