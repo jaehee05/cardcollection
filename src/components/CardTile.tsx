@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { PokemonCard } from "../types";
 import { RARITY_LABEL } from "../types";
 import { CardPlaceholder } from "./CardPlaceholder";
+import { NumberInput } from "./NumberInput";
 
 interface Props {
   card: PokemonCard;
@@ -107,14 +108,9 @@ export function CardTile({
           >
             −
           </button>
-          <input
-            type="number"
-            min={0}
+          <NumberInput
             value={count}
-            onChange={(e) => {
-              const v = Math.max(0, Number(e.target.value) || 0);
-              onSetCount(v);
-            }}
+            onChange={onSetCount}
             className="w-9 bg-transparent text-center text-[15px] font-extrabold text-brand-gray outline-none"
           />
           <button

@@ -14,6 +14,7 @@ import {
 } from "../utils/imageUrlPattern";
 import { parseClipboardTsv, type ParsedRow } from "../utils/parseTsv";
 import { compareSetsLatestFirst } from "../utils/sortSets";
+import { NumberInput } from "./NumberInput";
 
 const REGIONS: { id: Region; label: string }[] = [
   { id: "kr", label: "국내판" },
@@ -252,16 +253,11 @@ function SetEditor({
           </Field>
           <div className="grid grid-cols-3 gap-3">
             <Field label="일반 카드 수">
-              <input
-                type="number"
-                min={0}
+              <NumberInput
                 className="input-base"
                 value={set.totalCards}
                 disabled={!editable}
-                onChange={(e) => {
-                  const total = Math.max(0, Number(e.target.value) || 0);
-                  // 일반 카드 수가 줄어들 때 총카드 수가 그보다 작아지지 않도록
-                  // (시크릿은 항상 0 이상이어야 함)
+                onChange={(total) => {
                   const grand = set.totalCards + set.secretCards;
                   const nextSecret = Math.max(0, grand - total);
                   onPatch({ totalCards: total, secretCards: nextSecret });
@@ -269,21 +265,18 @@ function SetEditor({
               />
             </Field>
             <Field label="총 카드 수">
-              <input
-                type="number"
-                min={0}
+              <NumberInput
                 className="input-base"
                 value={set.totalCards + set.secretCards}
                 disabled={!editable}
-                onChange={(e) => {
-                  const grand = Math.max(0, Number(e.target.value) || 0);
-                  // 총 < 일반이면 시크릿 0
+                onChange={(grand) => {
                   const nextSecret = Math.max(0, grand - set.totalCards);
                   onPatch({ secretCards: nextSecret });
                 }}
               />
             </Field>
             <Field label="시크릿 (자동)">
+              {/* 자동 계산되는 표시용이라 0도 그대로 보여줌 */}
               <input
                 type="number"
                 className="input-base bg-brand-grayLight/40 text-brand-gray"
@@ -529,11 +522,10 @@ function ImageUrlFillBox({
 
       <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-[120px_1fr_auto]">
         <Field label="기준 카드 번호">
-          <input
-            type="number"
-            min={1}
+          <NumberInput
             value={seedNumber}
-            onChange={(e) => setSeedNumber(Math.max(1, Number(e.target.value)))}
+            min={1}
+            onChange={(v) => setSeedNumber(Math.max(1, v))}
             className="input-base"
           />
         </Field>
@@ -691,15 +683,13 @@ function CardTableEditor({
               {cards.map((c) => (
                 <tr key={c.id} className="border-t border-brand-grayLight/60">
                   <td className="px-2 py-1">
-                    <input
-                      type="number"
+                    <NumberInput
                       className="w-full bg-transparent px-1 py-1 outline-none focus:bg-white"
                       value={c.number}
+                      min={1}
                       disabled={!editable}
-                      onChange={(e) =>
-                        patchCard(c.id, {
-                          number: Number(e.target.value) || c.number,
-                        })
+                      onChange={(v) =>
+                        patchCard(c.id, { number: v || c.number })
                       }
                     />
                   </td>
@@ -728,16 +718,11 @@ function CardTableEditor({
                     </select>
                   </td>
                   <td className="px-2 py-1 text-right">
-                    <input
-                      type="number"
+                    <NumberInput
                       className="w-full bg-transparent px-1 py-1 text-right outline-none focus:bg-white"
                       value={c.marketPrice}
                       disabled={!editable}
-                      onChange={(e) =>
-                        patchCard(c.id, {
-                          marketPrice: Number(e.target.value) || 0,
-                        })
-                      }
+                      onChange={(v) => patchCard(c.id, { marketPrice: v })}
                     />
                   </td>
                   <td className="px-2 py-1">
