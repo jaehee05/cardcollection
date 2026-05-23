@@ -1,0 +1,20 @@
+// Firestore 보안 규칙 — cardcollection
+// 현재는 MVP라서 카드 DB(`sets` 컬렉션)는 누구나 읽기/쓰기 가능.
+// 추후 관리자 인증 도입 시 write 조건을 request.auth.token.admin == true 등으로 좁힐 것.
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /sets/{setId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // 그 외는 모두 거부 (기본값과 동일하지만 명시)
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
