@@ -13,6 +13,7 @@ import {
   extractPattern,
 } from "../utils/imageUrlPattern";
 import { parseClipboardTsv, type ParsedRow } from "../utils/parseTsv";
+import { compareSetsLatestFirst } from "../utils/sortSets";
 
 const REGIONS: { id: Region; label: string }[] = [
   { id: "kr", label: "국내판" },
@@ -55,7 +56,7 @@ export function AdminView() {
               내가 만든 세트
             </p>
             <SetList
-              sets={sets.userSets}
+              sets={[...sets.userSets].sort(compareSetsLatestFirst)}
               selectedId={selectedId}
               onSelect={setSelectedId}
               onDelete={(id) => {
@@ -76,7 +77,7 @@ export function AdminView() {
                 기본 세트 (읽기 전용)
               </p>
               <SetList
-                sets={sets.staticSets}
+                sets={[...sets.staticSets].sort(compareSetsLatestFirst)}
                 selectedId={selectedId}
                 onSelect={setSelectedId}
                 editable={false}
