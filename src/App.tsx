@@ -4,6 +4,7 @@ import { CollectionBook } from "./components/CollectionBook";
 import { SummaryView } from "./components/SummaryView";
 import { AdminView } from "./components/AdminView";
 import { SetPicker } from "./components/SetPicker";
+import { PullToRefresh } from "./components/PullToRefresh";
 import { useSets } from "./hooks/useSets";
 import { useOwnership, ownedCount } from "./hooks/useOwnership";
 
@@ -115,6 +116,7 @@ function App() {
 
   return (
     <div className="mx-auto min-h-screen w-full max-w-7xl px-3 py-4 md:px-6 md:py-6 lg:px-8">
+      <PullToRefresh />
       <header className="space-y-3">
         {/* Row 1: 로고 + 동기화 + 메인 탭 */}
         <div className="flex flex-wrap items-center justify-between gap-3">
