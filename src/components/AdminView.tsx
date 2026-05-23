@@ -132,14 +132,19 @@ function SetList({
           <button
             type="button"
             onClick={() => onSelect(s.id)}
-            className={`flex-1 truncate rounded-lg px-3 py-2 text-left text-[13px] font-semibold transition ${
+            className={`flex flex-1 items-center gap-2 truncate rounded-lg px-3 py-2 text-left text-[13px] font-semibold transition ${
               selectedId === s.id
                 ? "bg-brand-mint/15 text-brand-mintDark"
                 : "text-[#4A4658] hover:bg-brand-grayLight/60"
             }`}
             title={s.name}
           >
-            {s.name || "(이름 없음)"}
+            {s.code && (
+              <span className="shrink-0 rounded bg-brand-grayLight/80 px-1.5 py-0.5 text-[10px] font-extrabold uppercase text-brand-gray">
+                {s.code}
+              </span>
+            )}
+            <span className="truncate">{s.name || "(이름 없음)"}</span>
           </button>
           {editable && onDelete && (
             <button
@@ -187,7 +192,7 @@ function SetEditor({
               onChange={(e) => onPatch({ name: e.target.value })}
             />
           </Field>
-          <Field label="세트 코드 (예: sv7a)">
+          <Field label="세트 코드 (예: SV10, sv7a)">
             <input
               className="input-base"
               value={set.code}
@@ -195,6 +200,23 @@ function SetEditor({
               onChange={(e) => onPatch({ code: e.target.value })}
             />
           </Field>
+          <Field label="부스터팩 이미지 URL">
+            <input
+              className="input-base"
+              value={set.coverImageUrl ?? ""}
+              disabled={!editable}
+              placeholder="https://example.com/boosters/sv7a.png"
+              onChange={(e) =>
+                onPatch({ coverImageUrl: e.target.value || undefined })
+              }
+            />
+          </Field>
+          <div>
+            <span className="mb-1 block text-[12px] font-bold text-brand-gray">
+              부스터팩 미리보기
+            </span>
+            <BoosterPreview url={set.coverImageUrl} code={set.code} />
+          </div>
           <Field label="시리즈">
             <input
               className="input-base"
@@ -312,6 +334,35 @@ function Field({
       </span>
       {children}
     </label>
+  );
+}
+
+function BoosterPreview({
+  url,
+  code,
+}: {
+  url?: string;
+  code: string;
+}) {
+  const [failed, setFailed] = useState(false);
+  const showImg = !!url && !failed;
+  return (
+    <div className="relative grid aspect-[3/4] w-24 place-items-center overflow-hidden rounded-xl bg-brand-grayLight/40">
+      {showImg ? (
+        <img
+          src={url}
+          alt="booster"
+          className="h-full w-full object-cover"
+          onError={() => setFailed(true)}
+        />
+      ) : (
+        <div className="grid h-full w-full place-items-center bg-gradient-to-br from-purple-400 via-pink-300 to-brand-mint">
+          <span className="text-lg font-black uppercase tracking-wider text-white">
+            {code || "?"}
+          </span>
+        </div>
+      )}
+    </div>
   );
 }
 

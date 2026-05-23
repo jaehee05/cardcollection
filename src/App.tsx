@@ -3,7 +3,9 @@ import type { Region } from "./types";
 import { CollectionBook } from "./components/CollectionBook";
 import { SummaryView } from "./components/SummaryView";
 import { AdminView } from "./components/AdminView";
+import { SetPicker } from "./components/SetPicker";
 import { useSets } from "./hooks/useSets";
+import { useOwnership, ownedCount } from "./hooks/useOwnership";
 
 type Tab = "summary" | "collection" | "admin";
 
@@ -21,25 +23,35 @@ const REGIONS: { id: Region; label: string }[] = [
 
 function App() {
   const sets = useSets();
+  const ownership = useOwnership();
   const [tab, setTab] = useState<Tab>("collection");
   const [region, setRegion] = useState<Region>("kr");
+  const [activeSetId, setActiveSetId] = useState<string | undefined>(undefined);
 
   const regionSets = useMemo(
     () => sets.getByRegion(region),
     [sets, region],
   );
-  const [activeSetId, setActiveSetId] = useState<string | undefined>(
-    regionSets[0]?.id,
-  );
 
-  // 지역 변경 또는 세트 목록 변경 시 활성 세트가 더이상 존재하지 않으면 갱신
+  // 활성 세트가 더 이상 목록에 없으면 비움 (지역 전환 등)
   useEffect(() => {
-    if (!activeSetId || !regionSets.find((s) => s.id === activeSetId)) {
-      setActiveSetId(regionSets[0]?.id);
+    if (activeSetId && !regionSets.find((s) => s.id === activeSetId)) {
+      setActiveSetId(undefined);
     }
   }, [regionSets, activeSetId]);
 
   const activeSet = regionSets.find((s) => s.id === activeSetId);
+
+  // 각 세트별 고유 보유 카드 수 (SetPicker에서 표시)
+  const ownedBySet = useMemo(() => {
+    const out: Record<string, number> = {};
+    for (const s of sets.allSets) {
+      let n = 0;
+      for (const c of s.cards) if (ownedCount(ownership.map, c.id) > 0) n += 1;
+      out[s.id] = n;
+    }
+    return out;
+  }, [sets.allSets, ownership.map]);
 
   return (
     <div className="mx-auto min-h-screen max-w-7xl px-4 py-6 md:px-6 lg:px-8">
@@ -72,7 +84,10 @@ function App() {
               {REGIONS.map((r) => (
                 <button
                   key={r.id}
-                  onClick={() => setRegion(r.id)}
+                  onClick={() => {
+                    setRegion(r.id);
+                    setActiveSetId(undefined);
+                  }}
                   className={`rounded-full px-4 py-2 text-sm font-extrabold transition ${
                     region === r.id
                       ? "text-brand-mintDark underline decoration-brand-mint decoration-[3px] underline-offset-8"
@@ -88,25 +103,25 @@ function App() {
       </header>
 
       <main className="mt-6 space-y-6">
-        {tab === "collection" && (
-          <>
-            {regionSets.length > 1 && (
-              <SetSwitcher
-                sets={regionSets.map((s) => ({ id: s.id, name: s.name }))}
-                activeId={activeSet?.id}
-                onChange={setActiveSetId}
-              />
-            )}
-            {activeSet ? (
+        {tab === "collection" &&
+          (activeSet ? (
+            <>
+              <button
+                type="button"
+                onClick={() => setActiveSetId(undefined)}
+                className="inline-flex items-center gap-1 rounded-full bg-white px-3 py-1.5 text-[12px] font-extrabold text-[#4A4658] shadow-card hover:bg-brand-grayLight/60"
+              >
+                ← 다른 확장팩 선택
+              </button>
               <CollectionBook set={activeSet} />
-            ) : (
-              <EmptyState
-                message={`${labelOf(region)}의 세트가 아직 없어요`}
-                sub="관리자 탭에서 세트를 추가해 주세요."
-              />
-            )}
-          </>
-        )}
+            </>
+          ) : (
+            <SetPicker
+              sets={regionSets}
+              ownedCountBySetId={ownedBySet}
+              onPick={setActiveSetId}
+            />
+          ))}
 
         {tab === "summary" && <SummaryView sets={sets.allSets} />}
 
@@ -116,45 +131,6 @@ function App() {
       <footer className="mt-12 pb-4 text-center text-[12px] text-brand-gray">
         © Pokémon · 카드 데이터/시세는 관리자가 입력합니다.
       </footer>
-    </div>
-  );
-}
-
-function labelOf(region: Region): string {
-  return REGIONS.find((r) => r.id === region)?.label ?? region;
-}
-
-function SetSwitcher({
-  sets,
-  activeId,
-  onChange,
-}: {
-  sets: { id: string; name: string }[];
-  activeId?: string;
-  onChange: (id: string) => void;
-}) {
-  return (
-    <div className="flex flex-wrap gap-2">
-      {sets.map((s) => (
-        <button
-          key={s.id}
-          onClick={() => onChange(s.id)}
-          className={`pill ${
-            activeId === s.id ? "pill-active" : "pill-idle"
-          } max-w-full truncate`}
-        >
-          {s.name || "(이름 없음)"}
-        </button>
-      ))}
-    </div>
-  );
-}
-
-function EmptyState({ message, sub }: { message: string; sub?: string }) {
-  return (
-    <div className="rounded-3xl bg-white p-10 text-center shadow-card">
-      <p className="text-[15px] font-bold text-[#4A4658]">{message}</p>
-      {sub && <p className="mt-2 text-[13px] text-brand-gray">{sub}</p>}
     </div>
   );
 }
