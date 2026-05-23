@@ -1,0 +1,51 @@
+import type { CardSet } from "../types";
+
+interface Props {
+  set: CardSet;
+  ownedUniqueCount: number; // 본세트에서 1장 이상 가진 카드 개수
+}
+
+export function SetHeader({ set, ownedUniqueCount }: Props) {
+  const pct = set.totalCards === 0 ? 0 : Math.round((ownedUniqueCount / set.totalCards) * 100);
+
+  return (
+    <div className="rounded-3xl bg-white p-5 shadow-card">
+      <div className="grid grid-cols-1 items-center gap-4 md:grid-cols-[auto_1fr_auto_auto]">
+        {/* cover */}
+        <div className="grid h-20 w-20 place-items-center overflow-hidden rounded-2xl bg-gradient-to-br from-purple-400 to-brand-mint text-2xl font-black text-white">
+          {set.code.toUpperCase()}
+        </div>
+
+        {/* title */}
+        <div className="min-w-0">
+          <h2 className="truncate text-[17px] font-extrabold text-[#2A2538]">
+            {set.name}
+          </h2>
+          <p className="mt-1 text-[13px] text-brand-gray">
+            시리즈: <span className="text-[#4A4658]">{set.series}</span>
+            <span className="mx-3 text-brand-gray/60">|</span>
+            발매일: <span className="text-[#4A4658]">{set.releaseDate}</span>
+          </p>
+        </div>
+
+        {/* totals */}
+        <div className="text-center">
+          <div className="text-[20px] font-extrabold text-[#2A2538]">
+            {set.totalCards}개{" "}
+            <span className="text-[13px] font-bold text-brand-mintDark">
+              +{set.secretCards} 시크릿
+            </span>
+          </div>
+          <div className="mt-0.5 text-[13px] text-brand-gray">
+            {ownedUniqueCount} / {set.totalCards}
+          </div>
+        </div>
+
+        {/* completion */}
+        <div className="grid h-12 w-20 place-items-center rounded-full bg-brand-grayLight text-[15px] font-extrabold text-[#4A4658]">
+          {pct}%
+        </div>
+      </div>
+    </div>
+  );
+}

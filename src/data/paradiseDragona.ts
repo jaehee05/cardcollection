@@ -1,0 +1,145 @@
+import type { CardSet, PokemonCard, PokemonType, Rarity, CardStage } from "../types";
+
+// 낙원드래고나 (sv7a) — 샘플 데이터셋
+// 실제 발매 카드 일부 이름은 알려진 것을 사용하고, 나머지는 추후 보강 가능하도록 placeholder
+
+type Row = [
+  number,
+  string,
+  Rarity,
+  PokemonType,
+  number | undefined, // hp
+  CardStage,
+  number, // marketPrice (KRW)
+];
+
+// fmt: [번호, 이름, 희귀도, 타입, HP, 진화단계, 시세]
+const KOREAN_ROWS: Row[] = [
+  [1, "아라리", "C", "grass", 30, "기본", 200],
+  [2, "자마슈", "C", "grass", 60, "기본", 200],
+  [3, "마셰이드", "U", "grass", 110, "1진화", 600],
+  [4, "타타륜", "C", "water", 130, "기본", 250],
+  [5, "자르도", "C", "grass", 120, "기본", 200],
+  [6, "캐스폼 데이의 모습", "C", "water", 70, "기본", 250],
+  [7, "바이오프", "C", "water", 60, "기본", 200],
+  [8, "바이오키", "U", "water", 90, "1진화", 600],
+  [9, "토오토트", "C", "lightning", 60, "기본", 200],
+  [10, "스왈로트", "U", "grass", 90, "1진화", 500],
+  [11, "치오트", "R", "lightning", 130, "2진화", 1800],
+  [12, "꼬마돌", "C", "fighting", 60, "기본", 200],
+  [13, "데구락", "U", "fighting", 90, "1진화", 600],
+  [14, "데기라스", "R", "fighting", 140, "2진화", 2200],
+  [15, "마기라스", "RR", "fighting", 280, "2진화", 8500],
+  [16, "복지베", "C", "psychic", 70, "기본", 200],
+  [17, "리오레", "U", "psychic", 100, "1진화", 700],
+  [18, "그란돈", "R", "fighting", 160, "기본", 2400],
+  [19, "가이오가", "R", "water", 160, "기본", 2400],
+  [20, "레쿠쟈", "RR", "dragon", 290, "2진화", 14000],
+  [21, "메가스톤 어비스보드", "U", "trainer", undefined, "트레이너", 800],
+  [22, "수영장의 추억", "U", "trainer", undefined, "트레이너", 700],
+  [23, "낙원의 등불", "U", "trainer", undefined, "트레이너", 700],
+  [24, "노력의 부적", "U", "trainer", undefined, "트레이너", 900],
+  [25, "여행 가방", "U", "trainer", undefined, "트레이너", 1200],
+  [26, "바닐륨키", "C", "water", 30, "기본", 200],
+  [27, "바닐리치", "U", "water", 70, "1진화", 600],
+  [28, "배바닐라", "R", "water", 130, "2진화", 1800],
+  [29, "찌리리공", "C", "lightning", 60, "기본", 200],
+  [30, "붐볼", "U", "lightning", 90, "1진화", 600],
+  [31, "히트로토무", "R", "fire", 130, "기본", 2000],
+  [32, "워시로토무", "R", "water", 130, "기본", 2000],
+  [33, "프로스트로토무", "R", "water", 130, "기본", 2000],
+  [34, "탑승로토무", "R", "lightning", 130, "기본", 2000],
+  [35, "팬로토무", "R", "grass", 130, "기본", 2000],
+  [36, "쿠와루리", "C", "grass", 50, "기본", 200],
+  [37, "쿠와시루보", "U", "grass", 80, "1진화", 500],
+  [38, "쿠와의무모", "R", "grass", 140, "2진화", 2000],
+  [39, "와낙시", "C", "grass", 40, "기본", 200],
+  [40, "도단가", "U", "grass", 90, "1진화", 600],
+  [41, "와르키키", "C", "water", 60, "기본", 200],
+  [42, "와르비알", "U", "water", 100, "1진화", 700],
+  [43, "다부니", "C", "colorless", 70, "기본", 200],
+  [44, "포푸니라", "U", "darkness", 100, "1진화", 800],
+  [45, "이브이", "C", "colorless", 70, "기본", 400],
+  [46, "리피아", "R", "grass", 140, "1진화", 2400],
+  [47, "에브이", "R", "water", 140, "1진화", 2400],
+  [48, "블래키", "R", "darkness", 140, "1진화", 2400],
+  [49, "에이팜", "C", "colorless", 60, "기본", 200],
+  [50, "에이프란", "U", "colorless", 110, "1진화", 700],
+  [51, "사파리볼", "U", "trainer", undefined, "트레이너", 1500],
+  [52, "타임 게이트", "U", "trainer", undefined, "트레이너", 900],
+  [53, "스타디움 — 낙원", "U", "trainer", undefined, "트레이너", 900],
+  [54, "박사의 강의", "U", "trainer", undefined, "트레이너", 1200],
+  [55, "보스의 지령", "U", "trainer", undefined, "트레이너", 4500],
+  [56, "기술 머신: 회복술", "U", "trainer", undefined, "트레이너", 700],
+  [57, "기술 머신: 진화", "U", "trainer", undefined, "트레이너", 900],
+  [58, "구조용 들것", "U", "trainer", undefined, "트레이너", 700],
+  [59, "베이직 풀에너지", "U", "energy", undefined, "에너지", 300],
+  [60, "베이직 불꽃에너지", "U", "energy", undefined, "에너지", 300],
+  [61, "베이직 물에너지", "U", "energy", undefined, "에너지", 300],
+  [62, "베이직 번개에너지", "U", "energy", undefined, "에너지", 300],
+  [63, "베이직 초에너지", "U", "energy", undefined, "에너지", 300],
+  [64, "더블 턴 에너지", "U", "energy", undefined, "에너지", 600],
+];
+
+// 시크릿(65 ~ 94)
+const SECRET_ROWS: Row[] = [
+  [65, "마기라스 ex", "RR", "fighting", 330, "2진화", 22000],
+  [66, "그란돈 ex", "RR", "fighting", 230, "기본", 18000],
+  [67, "가이오가 ex", "RR", "water", 230, "기본", 18000],
+  [68, "레쿠쟈 ex", "RR", "dragon", 330, "2진화", 28000],
+  [69, "리피아 ex", "RR", "grass", 270, "1진화", 24000],
+  [70, "에브이 ex", "RR", "water", 270, "1진화", 24000],
+  [71, "블래키 ex", "RR", "darkness", 270, "1진화", 26000],
+  [72, "타타륜 ex", "RR", "water", 280, "기본", 16000],
+  [73, "마셰이드 ex", "RR", "grass", 280, "1진화", 14000],
+  [74, "마기라스 AR", "AR", "fighting", 280, "2진화", 18000],
+  [75, "레쿠쟈 AR", "AR", "dragon", 290, "2진화", 35000],
+  [76, "이브이 AR", "AR", "colorless", 70, "기본", 12000],
+  [77, "리피아 AR", "AR", "grass", 140, "1진화", 14000],
+  [78, "에브이 AR", "AR", "water", 140, "1진화", 14000],
+  [79, "블래키 AR", "AR", "darkness", 140, "1진화", 16000],
+  [80, "박사의 강의 AR", "AR", "trainer", undefined, "트레이너", 9000],
+  [81, "보스의 지령 AR", "AR", "trainer", undefined, "트레이너", 12000],
+  [82, "낙원의 등불 AR", "AR", "trainer", undefined, "트레이너", 8000],
+  [83, "마기라스 ex SR", "SR", "fighting", 330, "2진화", 35000],
+  [84, "레쿠쟈 ex SR", "SR", "dragon", 330, "2진화", 55000],
+  [85, "그란돈 ex SR", "SR", "fighting", 230, "기본", 28000],
+  [86, "가이오가 ex SR", "SR", "water", 230, "기본", 28000],
+  [87, "리피아 ex SR", "SR", "grass", 270, "1진화", 38000],
+  [88, "에브이 ex SR", "SR", "water", 270, "1진화", 38000],
+  [89, "블래키 ex SR", "SR", "darkness", 270, "1진화", 42000],
+  [90, "마기라스 ex SAR", "SAR", "fighting", 330, "2진화", 95000],
+  [91, "레쿠쟈 ex SAR", "SAR", "dragon", 330, "2진화", 180000],
+  [92, "리피아 ex SAR", "SAR", "grass", 270, "1진화", 120000],
+  [93, "블래키 ex SAR", "SAR", "darkness", 270, "1진화", 140000],
+  [94, "레쿠쟈 ex UR", "UR", "dragon", 330, "2진화", 220000],
+];
+
+function toCard(row: Row, setId: string): PokemonCard {
+  const [number, name, rarity, type, hp, stage, marketPrice] = row;
+  return {
+    id: `${setId}-${String(number).padStart(3, "0")}`,
+    setId,
+    number,
+    name,
+    rarity,
+    type,
+    hp,
+    stage,
+    marketPrice,
+  };
+}
+
+const SET_ID = "kr-sv7a";
+
+export const paradiseDragona: CardSet = {
+  id: SET_ID,
+  region: "kr",
+  code: "sv7a",
+  name: "스칼렛&바이올렛 강화 확장팩 「낙원드래고나」",
+  series: "스칼렛&바이올렛",
+  releaseDate: "2024-10-30",
+  totalCards: 64,
+  secretCards: 30,
+  cards: [...KOREAN_ROWS, ...SECRET_ROWS].map((r) => toCard(r, SET_ID)),
+};
