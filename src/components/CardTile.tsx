@@ -59,40 +59,50 @@ export function CardTile({
         </div>
       </div>
 
-      {/* meta row: rarity + number/total */}
-      <div className="mt-2 flex items-center justify-between text-[13px]">
-        <span className="font-semibold text-brand-gray">
+      {/* meta row: rarity + number/total + 보유 배지 */}
+      <div className="mt-2 flex items-center justify-between gap-1 text-[12px] md:text-[13px]">
+        <span className="truncate font-semibold text-brand-gray">
           <span className="mr-1 inline-block min-w-[18px] text-center">
             {card.rarity}
           </span>
-          <span>{RARITY_LABEL[card.rarity]}</span>
+          <span className="hidden sm:inline">{RARITY_LABEL[card.rarity]}</span>
         </span>
-        <span className="text-brand-gray">
+        <span className="shrink-0 text-brand-gray">
           {card.number}/{total}
+        </span>
+        <span
+          className={`shrink-0 rounded-md px-1.5 py-0.5 text-[10px] font-bold md:px-2 md:text-[11px] ${
+            owned
+              ? "bg-brand-mint/15 text-brand-mintDark"
+              : "bg-brand-grayLight text-brand-gray"
+          }`}
+        >
+          {owned ? "보유" : "미보유"}
         </span>
       </div>
 
-      {/* control row */}
-      <div className="mt-2 flex items-center gap-2">
+      {/* control row: 메모 + 카운터 */}
+      <div className="mt-1.5 flex items-center gap-1.5 md:mt-2 md:gap-2">
         <button
           type="button"
           onClick={() => setMemoOpen((v) => !v)}
-          className={`rounded-md px-2 py-1 text-[11px] font-bold transition ${
+          className={`shrink-0 rounded-md px-2 py-1 text-[11px] font-bold transition ${
             note
               ? "bg-brand-purple text-white"
               : "bg-brand-grayLight text-brand-gray hover:bg-purple-200"
           }`}
           title={note || "메모 추가"}
+          aria-label="메모"
         >
           메모
         </button>
 
-        <div className="flex flex-1 items-center justify-center gap-2">
+        <div className="flex flex-1 items-center justify-end gap-1.5 md:gap-2">
           <button
             type="button"
             onClick={() => onAdjust(-1)}
             disabled={count <= 0}
-            className="grid h-7 w-7 place-items-center rounded-full bg-brand-grayLight text-brand-gray transition hover:bg-purple-200 disabled:opacity-40"
+            className="grid h-8 w-8 place-items-center rounded-full bg-brand-grayLight text-brand-gray transition hover:bg-purple-200 disabled:opacity-40"
             aria-label="개수 감소"
           >
             −
@@ -105,27 +115,17 @@ export function CardTile({
               const v = Math.max(0, Number(e.target.value) || 0);
               onSetCount(v);
             }}
-            className="w-10 bg-transparent text-center text-[15px] font-extrabold text-brand-gray outline-none"
+            className="w-9 bg-transparent text-center text-[15px] font-extrabold text-brand-gray outline-none"
           />
           <button
             type="button"
             onClick={() => onAdjust(1)}
-            className="grid h-7 w-7 place-items-center rounded-full bg-brand-mint/15 text-brand-mintDark transition hover:bg-brand-mint/30"
+            className="grid h-8 w-8 place-items-center rounded-full bg-brand-mint/15 text-brand-mintDark transition hover:bg-brand-mint/30"
             aria-label="개수 증가"
           >
             +
           </button>
         </div>
-
-        <span
-          className={`rounded-md px-2 py-1 text-[11px] font-bold ${
-            owned
-              ? "bg-brand-mint/15 text-brand-mintDark"
-              : "bg-brand-grayLight text-brand-gray"
-          }`}
-        >
-          {owned ? "보유" : "미보유"}
-        </span>
       </div>
 
       {memoOpen && (

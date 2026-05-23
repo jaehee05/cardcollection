@@ -27,8 +27,8 @@ export function Filters({
   onViewModeChange,
 }: Props) {
   return (
-    <div className="rounded-3xl bg-white p-4 shadow-card">
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-[1fr_2fr_auto]">
+    <div className="rounded-2xl bg-white p-3 shadow-card md:rounded-3xl md:p-4">
+      <div className="grid grid-cols-1 gap-2 md:grid-cols-[180px_1fr] md:gap-3">
         <Labeled label="희귀도">
           <select
             value={rarityFilter}
@@ -48,31 +48,21 @@ export function Filters({
           <input
             value={query}
             onChange={(e) => onQueryChange(e.target.value)}
-            placeholder="카드 이름 또는 번호"
+            placeholder="카드 이름 또는 번호로 검색"
             className="input-base pr-10"
           />
           <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-brand-gray">
             🔍
           </span>
         </div>
-
-        <button
-          type="button"
-          onClick={() => {
-            /* 검색은 입력 즉시 반영되므로 noop */
-          }}
-          className="rounded-2xl bg-brand-mint px-6 py-3 text-sm font-extrabold text-white shadow-sm transition hover:bg-brand-mintDark"
-        >
-          검색
-        </button>
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center gap-2">
+      <div className="mt-3 flex flex-wrap items-center gap-1.5 md:mt-4 md:gap-2">
         {(
           [
             ["number", "번호"],
             ["name", "이름"],
-            ["owned", "보유수량"],
+            ["owned", "보유"],
             ["release", "발매일"],
           ] as const
         ).map(([k, label]) => (
@@ -80,37 +70,39 @@ export function Filters({
             key={k}
             type="button"
             onClick={() => onSortChange(k)}
-            className={`pill ${sortKey === k ? "pill-active" : "pill-idle"}`}
+            className={`pill !px-3 !py-1.5 !text-[12px] md:!px-4 md:!py-2 md:!text-sm ${
+              sortKey === k ? "pill-active" : "pill-idle"
+            }`}
           >
             <span className="text-base leading-none">≡</span>
             {label}
           </button>
         ))}
 
-        <div className="mx-2 hidden h-6 w-px bg-brand-grayLight md:block" />
+        <div className="mx-1 hidden h-6 w-px bg-brand-grayLight md:block" />
 
         <button
           type="button"
           onClick={() => onBulkAdjust(1)}
-          className="pill bg-brand-purple text-white hover:opacity-90"
+          className="pill !px-3 !py-1.5 !text-[12px] bg-brand-purple text-white hover:opacity-90 md:!px-4 md:!py-2 md:!text-sm"
         >
           <span className="text-base leading-none">+</span>
-          전체 +1장
+          전체 +1
         </button>
         <button
           type="button"
           onClick={() => onBulkAdjust(-1)}
-          className="pill bg-brand-purple text-white hover:opacity-90"
+          className="pill !px-3 !py-1.5 !text-[12px] bg-brand-purple text-white hover:opacity-90 md:!px-4 md:!py-2 md:!text-sm"
         >
           <span className="text-base leading-none">−</span>
-          전체 -1장
+          전체 -1
         </button>
 
         <div className="ml-auto flex items-center gap-1">
           <button
             type="button"
             onClick={() => onViewModeChange("grid")}
-            className={`grid h-9 w-9 place-items-center rounded-lg transition ${
+            className={`grid h-8 w-8 place-items-center rounded-lg transition md:h-9 md:w-9 ${
               viewMode === "grid"
                 ? "bg-brand-mint/15 text-brand-mintDark"
                 : "text-brand-gray hover:bg-brand-grayLight"
@@ -122,7 +114,7 @@ export function Filters({
           <button
             type="button"
             onClick={() => onViewModeChange("list")}
-            className={`grid h-9 w-9 place-items-center rounded-lg transition ${
+            className={`grid h-8 w-8 place-items-center rounded-lg transition md:h-9 md:w-9 ${
               viewMode === "list"
                 ? "bg-brand-mint/15 text-brand-mintDark"
                 : "text-brand-gray hover:bg-brand-grayLight"
