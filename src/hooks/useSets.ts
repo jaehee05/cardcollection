@@ -49,19 +49,19 @@ export interface SyncState {
 }
 
 export function useSets() {
-  // 1) localStorage 캐시로 즉시 초기화 → 첫 페인트가 비어있지 않게
   const [userSets, setUserSets] = useState<CardSet[]>(() => loadCache());
   const [sync, setSync] = useState<SyncState>({ status: "loading" });
-  // Firestore에서 한 번이라도 데이터를 받았는지
-  const liveReceivedRef = useRef(false);
 
-  // 2) Firestore 실시간 구독
+  // userSets가 바뀔 때마다 localStorage에도 백업 (오프라인 편집 보존)
+  useEffect(() => {
+    saveCache(userSets);
+  }, [userSets]);
+
+  // Firestore 실시간 구독
   useEffect(() => {
     const unsub = subscribeAllSets(
       (sets) => {
-        liveReceivedRef.current = true;
         setUserSets(sets);
-        saveCache(sets);
         setSync({ status: "live" });
       },
       (err) => {
@@ -83,6 +83,13 @@ export function useSets() {
     [allSets],
   );
 
+  // 동기적 상태 추적용 ref — setState 함수형 updater는 비동기 실행이라
+  // 외부에서 새 값을 바로 읽으려면 ref가 필요
+  const userSetsRef = useRef(userSets);
+  useEffect(() => {
+    userSetsRef.current = userSets;
+  }, [userSets]);
+
   const createSet = useCallback(
     (init: Partial<CardSet> & { region: Region; name: string }) => {
       const id = newSetId();
@@ -98,8 +105,9 @@ export function useSets() {
         coverImageUrl: init.coverImageUrl,
         cards: init.cards ?? [],
       };
-      // 낙관적 업데이트 (Firestore 응답 전 UI 반영)
-      setUserSets((prev) => [...prev, next]);
+      // ref와 state 동시 갱신 → 같은 tick에서 다시 호출돼도 stale 안 됨
+      userSetsRef.current = [...userSetsRef.current, next];
+      setUserSets(userSetsRef.current);
       void repoUpsertSet(next).catch((e) =>
         setSync({ status: "offline", error: (e as Error).message }),
       );
@@ -111,21 +119,18 @@ export function useSets() {
   const updateSet = useCallback(
     (id: string, patch: Partial<CardSet>) => {
       if (!id.startsWith(USER_PREFIX)) return false;
-      let next: CardSet | undefined;
-      setUserSets((prev) =>
-        prev.map((s) => {
-          if (s.id !== id) return s;
-          const merged: CardSet = { ...s, ...patch, id: s.id };
-          next = merged;
-          return merged;
-        }),
+      const current = userSetsRef.current.find((s) => s.id === id);
+      if (!current) return false;
+      const merged: CardSet = { ...current, ...patch, id: current.id };
+
+      userSetsRef.current = userSetsRef.current.map((s) =>
+        s.id === id ? merged : s,
       );
-      if (next) {
-        const target = next;
-        void repoUpsertSet(target).catch((e) =>
-          setSync({ status: "offline", error: (e as Error).message }),
-        );
-      }
+      setUserSets(userSetsRef.current);
+
+      void repoUpsertSet(merged).catch((e) =>
+        setSync({ status: "offline", error: (e as Error).message }),
+      );
       return true;
     },
     [],
@@ -133,7 +138,8 @@ export function useSets() {
 
   const deleteSet = useCallback((id: string) => {
     if (!id.startsWith(USER_PREFIX)) return false;
-    setUserSets((prev) => prev.filter((s) => s.id !== id));
+    userSetsRef.current = userSetsRef.current.filter((s) => s.id !== id);
+    setUserSets(userSetsRef.current);
     void repoRemoveSet(id).catch((e) =>
       setSync({ status: "offline", error: (e as Error).message }),
     );
