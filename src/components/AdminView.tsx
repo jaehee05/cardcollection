@@ -14,11 +14,7 @@ import {
   describePattern,
   extractPattern,
 } from "../utils/imageUrlPattern";
-import {
-  parseClipboardTsv,
-  TSV_TEMPLATE_HEADER,
-  type ParsedRow,
-} from "../utils/parseTsv";
+import { parseClipboardTsv, type ParsedRow } from "../utils/parseTsv";
 
 const REGIONS: { id: Region; label: string }[] = [
   { id: "kr", label: "국내판" },
@@ -78,17 +74,19 @@ export function AdminView() {
             )}
           </div>
 
-          <div className="mt-4">
-            <p className="mb-2 text-[12px] font-bold text-brand-gray">
-              샘플 세트 (읽기 전용)
-            </p>
-            <SetList
-              sets={sets.staticSets}
-              selectedId={selectedId}
-              onSelect={setSelectedId}
-              editable={false}
-            />
-          </div>
+          {sets.staticSets.length > 0 && (
+            <div className="mt-4">
+              <p className="mb-2 text-[12px] font-bold text-brand-gray">
+                기본 세트 (읽기 전용)
+              </p>
+              <SetList
+                sets={sets.staticSets}
+                selectedId={selectedId}
+                onSelect={setSelectedId}
+                editable={false}
+              />
+            </div>
+          )}
         </div>
       </aside>
 
@@ -388,16 +386,25 @@ function TsvPasteBox({
       <h3 className="text-[15px] font-extrabold">엑셀에서 붙여넣기</h3>
       <p className="mt-1 text-[12px] text-brand-gray">
         엑셀이나 구글시트의 셀 범위를 그대로 복사한 뒤 아래 칸에 붙여넣어 주세요.
-        탭(\t) 구분, 한 행이 카드 1장이에요.
+        탭 구분, 한 행이 카드 1장.
       </p>
-      <p className="mt-2 text-[12px] text-brand-mintDark">
-        컬럼 순서: <code className="font-mono">{TSV_TEMPLATE_HEADER}</code>
-      </p>
+      <ul className="mt-2 space-y-0.5 text-[12px] text-[#4A4658]">
+        <li>
+          <b className="text-brand-mintDark">필수 컬럼:</b> 번호 · 이름 · 희귀도
+        </li>
+        <li>
+          <b>선택 컬럼:</b> 타입 · HP · 진화단계 · 시세 · 이미지URL · 일러스트
+        </li>
+        <li>
+          번호는 <code className="font-mono">001</code> 또는{" "}
+          <code className="font-mono">001/080</code> 형식 둘 다 OK
+        </li>
+      </ul>
 
       <textarea
         value={text}
         onChange={(e) => setText(e.target.value)}
-        placeholder={`예시:\n1\t아라리\tC\t풀\t30\t기본\t200\thttps://.../001.png\n2\t자마슈\tC\t풀\t60\t기본\t200\thttps://.../002.png`}
+        placeholder={`예시:\n001/080\t뚜벅쵸\tC\n002/080\t냄새꼬\tC\n003/080\t라플레시아\tU\n...`}
         className="mt-3 h-40 w-full rounded-2xl border border-brand-grayLight bg-brand-bg/40 p-3 font-mono text-[12px] outline-none focus:ring-2 focus:ring-brand-mint/40"
         spellCheck={false}
       />

@@ -8,7 +8,8 @@ export type Rarity =
   | "AR" // 아트레어
   | "SR" // 슈퍼레어
   | "SAR" // 스페셜 아트레어
-  | "UR"; // 울트라레어
+  | "UR" // 울트라레어
+  | "MUR"; // 메가 울트라레어
 
 export const RARITY_LABEL: Record<Rarity, string> = {
   C: "커먼",
@@ -19,6 +20,7 @@ export const RARITY_LABEL: Record<Rarity, string> = {
   SR: "슈퍼레어",
   SAR: "스페셜 아트",
   UR: "울트라레어",
+  MUR: "메가 울트라레어",
 };
 
 export const RARITY_ORDER: Rarity[] = [
@@ -30,6 +32,7 @@ export const RARITY_ORDER: Rarity[] = [
   "SR",
   "SAR",
   "UR",
+  "MUR",
 ];
 
 export type PokemonType =
