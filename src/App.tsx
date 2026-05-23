@@ -10,11 +10,13 @@ import { useOwnership, ownedCount } from "./hooks/useOwnership";
 
 type Tab = "summary" | "collection" | "admin";
 
+// 메인 탭에는 admin 노출 안 함 — admin은 footer의 작은 토글로만 진입
 const TABS: { id: Tab; label: string }[] = [
   { id: "summary", label: "집계현황" },
   { id: "collection", label: "콜렉션북" },
-  { id: "admin", label: "관리자" },
 ];
+
+const ALL_TAB_IDS: Tab[] = ["summary", "collection", "admin"];
 
 const REGIONS: { id: Region; label: string }[] = [
   { id: "kr", label: "국내판" },
@@ -37,10 +39,10 @@ const DEFAULT_NAV: NavState = {
 function readNavFromUrl(): NavState {
   if (typeof window === "undefined") return DEFAULT_NAV;
   const p = new URLSearchParams(window.location.search);
-  const t = p.get("tab");
+  const t = p.get("tab") as Tab | null;
   const r = p.get("region");
   return {
-    tab: (TABS.find((x) => x.id === t)?.id ?? "collection") as Tab,
+    tab: t && ALL_TAB_IDS.includes(t) ? t : "collection",
     region: (REGIONS.find((x) => x.id === r)?.id ?? "kr") as Region,
     activeSetId: p.get("set") || undefined,
   };
@@ -208,8 +210,20 @@ function App() {
         {tab === "admin" && <AdminView />}
       </main>
 
-      <footer className="mt-12 pb-4 text-center text-[12px] text-brand-gray">
-        © Pokémon · 카드 데이터/시세는 관리자가 입력합니다.
+      <footer className="mt-12 flex flex-wrap items-center justify-between gap-2 pb-4 text-[11px] text-brand-gray">
+        <span>© Pokémon · 카드 데이터/시세는 관리자가 입력합니다.</span>
+        <button
+          type="button"
+          onClick={() => setTab(tab === "admin" ? "collection" : "admin")}
+          className={`rounded-md px-2 py-1 transition ${
+            tab === "admin"
+              ? "bg-brand-mint/15 font-extrabold text-brand-mintDark"
+              : "text-brand-gray/70 hover:bg-brand-grayLight/60 hover:text-[#4A4658]"
+          }`}
+          title="관리자 페이지"
+        >
+          {tab === "admin" ? "← 관리자 닫기" : "⚙ 관리자"}
+        </button>
       </footer>
     </div>
   );
