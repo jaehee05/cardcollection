@@ -21,10 +21,20 @@ export function SetPicker({ sets, ownedCountBySetId, onPick }: Props) {
     );
   }
 
-  // 발매일 최신순
-  const sorted = [...sets].sort((a, b) =>
-    (b.releaseDate ?? "").localeCompare(a.releaseDate ?? ""),
-  );
+  // 세트코드 내림차순 (SV10 → SV7a → SV1 …) — 발매 최신 → 오래된 순과 동일
+  // localeCompare에 numeric:true를 주면 "SV10"이 "SV7a"보다 큰 것으로 자연 정렬됨
+  const sorted = [...sets].sort((a, b) => {
+    const ca = a.code ?? "";
+    const cb = b.code ?? "";
+    if (ca && cb) {
+      return cb.localeCompare(ca, undefined, {
+        numeric: true,
+        sensitivity: "base",
+      });
+    }
+    // 코드가 없으면 발매일로 폴백
+    return (b.releaseDate ?? "").localeCompare(a.releaseDate ?? "");
+  });
 
   return (
     <div>
