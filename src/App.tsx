@@ -119,9 +119,19 @@ function App() {
         {/* Row 1: 로고 + 동기화 + 메인 탭 */}
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-2">
-            <h1 className="text-[22px] font-black tracking-tight text-[#2A2538] md:text-[28px]">
+            <button
+              type="button"
+              onClick={() => {
+                setTab("collection");
+                setRegion("kr");
+                setActiveSetId(undefined);
+              }}
+              className="text-[22px] font-black tracking-tight text-[#2A2538] transition hover:opacity-75 md:text-[28px]"
+              aria-label="홈으로"
+              title="홈으로"
+            >
               콜렉션북
-            </h1>
+            </button>
             <SyncBadge state={sets.sync} />
           </div>
 
