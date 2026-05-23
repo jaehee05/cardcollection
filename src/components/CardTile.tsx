@@ -24,25 +24,33 @@ export function CardTile({
 }: Props) {
   const owned = count > 0;
   const [memoOpen, setMemoOpen] = useState(false);
+  const [imgFailed, setImgFailed] = useState(false);
+  // 카드 imageUrl이 바뀌면 실패 상태 리셋
+  const showImage = !!card.imageUrl && !imgFailed;
 
   return (
     <div className="flex flex-col">
       <div className="relative">
-        {/* card image (그레이스케일 미보유) */}
+        {/* card image — 5:7 비율로 모든 카드 동일 사이즈, 실패 시 NO IMAGE 자동 폴백 */}
         <div
           className={`overflow-hidden rounded-xl shadow-card transition ${
             owned ? "" : "grayscale opacity-60"
           }`}
         >
-          {card.imageUrl ? (
-            <img
-              src={card.imageUrl}
-              alt={card.name}
-              className="block h-auto w-full"
-            />
-          ) : (
-            <CardPlaceholder card={card} className="block h-auto w-full" />
-          )}
+          <div className="aspect-[5/7] w-full bg-brand-grayLight/40">
+            {showImage ? (
+              <img
+                key={card.imageUrl}
+                src={card.imageUrl}
+                alt={card.name}
+                loading="lazy"
+                className="h-full w-full object-cover"
+                onError={() => setImgFailed(true)}
+              />
+            ) : (
+              <CardPlaceholder card={card} className="block h-full w-full" />
+            )}
+          </div>
         </div>
 
         {/* number badge in bottom-left of image */}
