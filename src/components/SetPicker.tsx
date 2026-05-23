@@ -84,6 +84,14 @@ function SetCard({
           </span>
         </div>
 
+        {set.series && (
+          <p
+            className="line-clamp-1 text-[11px] font-bold text-brand-gray"
+            title={set.series}
+          >
+            {set.series}
+          </p>
+        )}
         <p
           className="line-clamp-2 text-[13px] font-extrabold text-[#2A2538]"
           title={set.name}

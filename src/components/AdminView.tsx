@@ -1,13 +1,11 @@
 import { useMemo, useState } from "react";
 import type {
   CardSet,
-  CardStage,
   PokemonCard,
-  PokemonType,
   Rarity,
   Region,
 } from "../types";
-import { RARITY_LABEL, RARITY_ORDER, TYPE_LABEL } from "../types";
+import { RARITY_LABEL, RARITY_ORDER } from "../types";
 import { useSets } from "../hooks/useSets";
 import {
   applyPattern,
@@ -21,8 +19,6 @@ const REGIONS: { id: Region; label: string }[] = [
   { id: "us", label: "북미판" },
   { id: "jp", label: "일본판" },
 ];
-
-const STAGES: CardStage[] = ["기본", "1진화", "2진화", "트레이너", "에너지"];
 
 export function AdminView() {
   const sets = useSets();
@@ -142,7 +138,14 @@ function SetList({
                 {s.code}
               </span>
             )}
-            <span className="truncate">{s.name || "(이름 없음)"}</span>
+            <span className="flex min-w-0 flex-col leading-tight">
+              {s.series && (
+                <span className="truncate text-[10px] font-bold text-brand-gray">
+                  {s.series}
+                </span>
+              )}
+              <span className="truncate">{s.name || "(이름 없음)"}</span>
+            </span>
           </button>
           {editable && onDelete && (
             <button
@@ -625,8 +628,6 @@ function CardTableEditor({
       number: nextNumber,
       name: "",
       rarity: "C",
-      type: "colorless",
-      stage: "기본",
       marketPrice: 0,
     };
     onCardsChange([...set.cards, newCard]);
@@ -655,15 +656,12 @@ function CardTableEditor({
         </p>
       ) : (
         <div className="mt-3 overflow-x-auto">
-          <table className="w-full min-w-[920px] text-[12px]">
+          <table className="w-full min-w-[640px] text-[12px]">
             <thead className="bg-brand-grayLight/60 text-brand-gray">
               <tr className="text-left">
                 <th className="px-2 py-2 w-12">번호</th>
                 <th className="px-2 py-2">이름</th>
-                <th className="px-2 py-2 w-16">희귀</th>
-                <th className="px-2 py-2 w-24">타입</th>
-                <th className="px-2 py-2 w-16">HP</th>
-                <th className="px-2 py-2 w-24">진화</th>
+                <th className="px-2 py-2 w-20">희귀도</th>
                 <th className="px-2 py-2 w-24 text-right">시세(원)</th>
                 <th className="px-2 py-2">이미지 URL</th>
                 {editable && <th className="px-2 py-2 w-8" />}
@@ -705,51 +703,6 @@ function CardTableEditor({
                       {RARITY_ORDER.map((r) => (
                         <option key={r} value={r}>
                           {r} {RARITY_LABEL[r]}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td className="px-2 py-1">
-                    <select
-                      className="w-full bg-transparent px-1 py-1 outline-none focus:bg-white"
-                      value={c.type}
-                      disabled={!editable}
-                      onChange={(e) =>
-                        patchCard(c.id, { type: e.target.value as PokemonType })
-                      }
-                    >
-                      {(Object.keys(TYPE_LABEL) as PokemonType[]).map((t) => (
-                        <option key={t} value={t}>
-                          {TYPE_LABEL[t]}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td className="px-2 py-1">
-                    <input
-                      type="number"
-                      className="w-full bg-transparent px-1 py-1 outline-none focus:bg-white"
-                      value={c.hp ?? ""}
-                      disabled={!editable}
-                      onChange={(e) =>
-                        patchCard(c.id, {
-                          hp: e.target.value === "" ? undefined : Number(e.target.value),
-                        })
-                      }
-                    />
-                  </td>
-                  <td className="px-2 py-1">
-                    <select
-                      className="w-full bg-transparent px-1 py-1 outline-none focus:bg-white"
-                      value={c.stage}
-                      disabled={!editable}
-                      onChange={(e) =>
-                        patchCard(c.id, { stage: e.target.value as CardStage })
-                      }
-                    >
-                      {STAGES.map((s) => (
-                        <option key={s} value={s}>
-                          {s}
                         </option>
                       ))}
                     </select>

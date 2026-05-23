@@ -35,51 +35,17 @@ export const RARITY_ORDER: Rarity[] = [
   "MUR",
 ];
 
-export type PokemonType =
-  | "grass"
-  | "fire"
-  | "water"
-  | "lightning"
-  | "psychic"
-  | "fighting"
-  | "darkness"
-  | "metal"
-  | "dragon"
-  | "colorless"
-  | "trainer"
-  | "energy";
-
-export const TYPE_LABEL: Record<PokemonType, string> = {
-  grass: "풀",
-  fire: "불꽃",
-  water: "물",
-  lightning: "번개",
-  psychic: "초",
-  fighting: "격투",
-  darkness: "악",
-  metal: "강철",
-  dragon: "드래곤",
-  colorless: "무색",
-  trainer: "트레이너",
-  energy: "에너지",
+export const RARITY_COLOR: Record<Rarity, string> = {
+  C: "#A9A5B5",
+  U: "#7BC74D",
+  R: "#3FA9F5",
+  RR: "#5B7CFA",
+  AR: "#C56AC2",
+  SR: "#F8C530",
+  SAR: "#F08030",
+  UR: "#E55D87",
+  MUR: "#C9362C",
 };
-
-export const TYPE_COLOR: Record<PokemonType, string> = {
-  grass: "#7BC74D",
-  fire: "#F08030",
-  water: "#3FA9F5",
-  lightning: "#F8D030",
-  psychic: "#C56AC2",
-  fighting: "#C9362C",
-  darkness: "#4C4A4A",
-  metal: "#9CA0AC",
-  dragon: "#7D5DDB",
-  colorless: "#C9C8BE",
-  trainer: "#E0B07A",
-  energy: "#E55D87",
-};
-
-export type CardStage = "기본" | "1진화" | "2진화" | "트레이너" | "에너지";
 
 export interface PokemonCard {
   id: string;
@@ -87,11 +53,8 @@ export interface PokemonCard {
   number: number; // 1-based number within set
   name: string;
   rarity: Rarity;
-  type: PokemonType;
-  hp?: number;
-  stage: CardStage;
   illustrator?: string;
-  // KRW market price (sample data)
+  // KRW market price (admin-entered)
   marketPrice: number;
   // optional override image URL — when missing, we render a placeholder SVG
   imageUrl?: string;
@@ -100,7 +63,7 @@ export interface PokemonCard {
 export interface CardSet {
   id: string;
   region: Region;
-  code: string; // e.g. sv7a
+  code: string; // e.g. SV10, sv7a
   name: string;
   series: string;
   releaseDate: string; // ISO

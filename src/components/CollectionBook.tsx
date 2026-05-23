@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import type { CardSet, PokemonType, Rarity } from "../types";
+import type { CardSet, Rarity } from "../types";
 import { useOwnership, ownedCount, ownedNote } from "../hooks/useOwnership";
 import { SetHeader } from "./SetHeader";
 import { Filters, type SortKey } from "./Filters";
@@ -11,7 +11,6 @@ interface Props {
 
 export function CollectionBook({ set }: Props) {
   const ownership = useOwnership();
-  const [typeFilter, setTypeFilter] = useState<PokemonType | "all">("all");
   const [rarityFilter, setRarityFilter] = useState<Rarity | "all">("all");
   const [query, setQuery] = useState("");
   const [sortKey, setSortKey] = useState<SortKey>("number");
@@ -20,7 +19,6 @@ export function CollectionBook({ set }: Props) {
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     const list = set.cards.filter((c) => {
-      if (typeFilter !== "all" && c.type !== typeFilter) return false;
       if (rarityFilter !== "all" && c.rarity !== rarityFilter) return false;
       if (q && !c.name.toLowerCase().includes(q) && !String(c.number).includes(q))
         return false;
@@ -37,7 +35,6 @@ export function CollectionBook({ set }: Props) {
           return a.number - b.number;
         }
         case "release":
-          // 단일 세트 내에서는 번호 순이 곧 발매 순
           return a.number - b.number;
         case "number":
         default:
@@ -45,7 +42,7 @@ export function CollectionBook({ set }: Props) {
       }
     });
     return list;
-  }, [set.cards, typeFilter, rarityFilter, query, sortKey, ownership.map]);
+  }, [set.cards, rarityFilter, query, sortKey, ownership.map]);
 
   const ownedUnique = useMemo(
     () =>
@@ -60,10 +57,8 @@ export function CollectionBook({ set }: Props) {
     <div className="space-y-4">
       <SetHeader set={set} ownedUniqueCount={ownedUnique} />
       <Filters
-        cardTypeFilter={typeFilter}
         rarityFilter={rarityFilter}
         query={query}
-        onTypeChange={setTypeFilter}
         onRarityChange={setRarityFilter}
         onQueryChange={setQuery}
         sortKey={sortKey}
@@ -122,7 +117,6 @@ function ListView({
             <th className="px-4 py-3">번호</th>
             <th className="px-4 py-3">이름</th>
             <th className="px-4 py-3">희귀도</th>
-            <th className="px-4 py-3">타입</th>
             <th className="px-4 py-3 text-right">시세</th>
             <th className="px-4 py-3 text-center">보유</th>
           </tr>
@@ -142,7 +136,6 @@ function ListView({
                 </td>
                 <td className="px-4 py-2">{c.name}</td>
                 <td className="px-4 py-2">{c.rarity}</td>
-                <td className="px-4 py-2">{c.type}</td>
                 <td className="px-4 py-2 text-right">
                   {c.marketPrice.toLocaleString()}원
                 </td>

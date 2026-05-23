@@ -13,8 +13,6 @@ import type { CardSet } from "../types";
 
 const COLLECTION = "sets";
 
-// Firestore에서 카드 세트 한 건을 안전하게 직렬화/역직렬화
-// (undefined 필드는 Firestore가 거부하므로 null로 변환)
 function toDoc(set: CardSet): DocumentData {
   return {
     id: set.id,
@@ -32,9 +30,6 @@ function toDoc(set: CardSet): DocumentData {
       number: c.number,
       name: c.name,
       rarity: c.rarity,
-      type: c.type,
-      hp: c.hp ?? null,
-      stage: c.stage,
       illustrator: c.illustrator ?? null,
       marketPrice: c.marketPrice ?? 0,
       imageUrl: c.imageUrl ?? null,
@@ -60,9 +55,6 @@ function fromDoc(raw: DocumentData): CardSet {
       number: c.number,
       name: c.name,
       rarity: c.rarity,
-      type: c.type,
-      hp: c.hp ?? undefined,
-      stage: c.stage,
       illustrator: c.illustrator ?? undefined,
       marketPrice: c.marketPrice ?? 0,
       imageUrl: c.imageUrl ?? undefined,
@@ -100,5 +92,4 @@ export async function removeSet(id: string): Promise<void> {
   await deleteDoc(doc(db, COLLECTION, id));
 }
 
-// 디버깅용 — 강제로 마지막 갱신 시각 표시
 export type WithTimestamp<T> = T & { updatedAt?: Timestamp };

@@ -23,12 +23,15 @@ export function SetHeader({ set, ownedUniqueCount }: Props) {
               </span>
             )}
             <h2 className="truncate text-[17px] font-extrabold text-[#2A2538]">
+              {set.series && (
+                <span className="mr-2 text-[14px] font-bold text-brand-gray">
+                  {set.series}
+                </span>
+              )}
               {set.name}
             </h2>
           </div>
           <p className="mt-1 text-[13px] text-brand-gray">
-            시리즈: <span className="text-[#4A4658]">{set.series}</span>
-            <span className="mx-3 text-brand-gray/60">|</span>
             발매일: <span className="text-[#4A4658]">{set.releaseDate}</span>
           </p>
         </div>
