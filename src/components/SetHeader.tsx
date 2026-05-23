@@ -62,7 +62,7 @@ function Cover({ set }: { set: CardSet }) {
   const [failed, setFailed] = useState(false);
   const showImg = !!set.coverImageUrl && !failed;
   return (
-    <div className="grid h-20 w-20 place-items-center overflow-hidden rounded-2xl bg-gradient-to-br from-purple-400 to-brand-mint text-base font-black uppercase text-white">
+    <div className="h-24 w-[72px] shrink-0 overflow-hidden rounded-xl bg-brand-grayLight/60">
       {showImg ? (
         <img
           src={set.coverImageUrl}
@@ -71,7 +71,9 @@ function Cover({ set }: { set: CardSet }) {
           onError={() => setFailed(true)}
         />
       ) : (
-        <span>{set.code || "?"}</span>
+        <div className="grid h-full w-full place-items-center text-[11px] font-extrabold uppercase text-brand-gray">
+          {set.code || "?"}
+        </div>
       )}
     </div>
   );
