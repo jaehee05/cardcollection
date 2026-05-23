@@ -1,0 +1,26 @@
+{
+  "name": "콜렉션북",
+  "short_name": "콜렉션북",
+  "description": "포켓몬 카드 콜렉션과 가치 계산",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F5F3FA",
+  "theme_color": "#3FD0CB",
+  "lang": "ko",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

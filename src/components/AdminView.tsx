@@ -250,27 +250,46 @@ function SetEditor({
               ))}
             </select>
           </Field>
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="기본 카드 수">
+          <div className="grid grid-cols-3 gap-3">
+            <Field label="일반 카드 수">
               <input
                 type="number"
+                min={0}
                 className="input-base"
                 value={set.totalCards}
                 disabled={!editable}
-                onChange={(e) =>
-                  onPatch({ totalCards: Number(e.target.value) || 0 })
-                }
+                onChange={(e) => {
+                  const total = Math.max(0, Number(e.target.value) || 0);
+                  // 일반 카드 수가 줄어들 때 총카드 수가 그보다 작아지지 않도록
+                  // (시크릿은 항상 0 이상이어야 함)
+                  const grand = set.totalCards + set.secretCards;
+                  const nextSecret = Math.max(0, grand - total);
+                  onPatch({ totalCards: total, secretCards: nextSecret });
+                }}
               />
             </Field>
-            <Field label="시크릿 수">
+            <Field label="총 카드 수">
               <input
                 type="number"
+                min={0}
                 className="input-base"
-                value={set.secretCards}
+                value={set.totalCards + set.secretCards}
                 disabled={!editable}
-                onChange={(e) =>
-                  onPatch({ secretCards: Number(e.target.value) || 0 })
-                }
+                onChange={(e) => {
+                  const grand = Math.max(0, Number(e.target.value) || 0);
+                  // 총 < 일반이면 시크릿 0
+                  const nextSecret = Math.max(0, grand - set.totalCards);
+                  onPatch({ secretCards: nextSecret });
+                }}
+              />
+            </Field>
+            <Field label="시크릿 (자동)">
+              <input
+                type="number"
+                className="input-base bg-brand-grayLight/40 text-brand-gray"
+                value={set.secretCards}
+                disabled
+                readOnly
               />
             </Field>
           </div>

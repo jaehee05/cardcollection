@@ -2,12 +2,26 @@
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1"
+    />
     <title>콜렉션북 · Pokemon Card Collection</title>
     <meta
       name="description"
       content="포켓몬 카드 콜렉션북 — 보유 카드 체크와 콜렉션 가치 계산"
     />
+    <meta name="theme-color" content="#3FD0CB" />
+
+    <!-- PWA / iOS 홈화면 -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="콜렉션북" />
+    <meta name="format-detection" content="telephone=no" />
   </head>
   <body>
     <div id="root"></div>

@@ -7,9 +7,14 @@
 html,
 body,
 #root {
-  height: 100%;
+  min-height: 100%;
   background: #f5f3fa;
   color: #2a2538;
+}
+
+html {
+  /* iOS에서 standalone(웹앱) 모드일 때 스크롤 바운스 방지/허용 균형 */
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -17,6 +22,27 @@ body {
   font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui,
     "Apple SD Gothic Neo", "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
+  /* iPhone 노치/홈인디케이터 영역까지 배경 확장 + 컨텐츠는 safe-area 안에 */
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+/* iOS standalone에서 사용자 선택 비활성화 (홈화면 아이콘에서 열린 경우) */
+@media (display-mode: standalone) {
+  body {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* 입력 가능한 요소는 다시 선택 가능하게 */
+  input,
+  textarea,
+  [contenteditable="true"] {
+    -webkit-user-select: text;
+    user-select: text;
+  }
 }
 
 @layer components {
@@ -33,6 +59,8 @@ body {
     @apply inline-flex items-center justify-center rounded-md px-2 py-0.5 text-[11px] font-semibold;
   }
   .input-base {
-    @apply w-full rounded-2xl bg-white px-4 py-3 text-sm shadow-sm outline-none focus:ring-2 focus:ring-brand-mint/40;
+    /* iOS Safari가 16px 미만 폰트에서 자동 줌하는 걸 막기 위해 폰트 16px 이상 사용 */
+    @apply w-full rounded-2xl bg-white px-4 py-3 text-base shadow-sm outline-none focus:ring-2 focus:ring-brand-mint/40;
+    font-size: 16px;
   }
 }
