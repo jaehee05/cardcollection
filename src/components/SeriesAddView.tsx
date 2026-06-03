@@ -275,14 +275,17 @@ function SeriesGrid({
         rarity: pc.rarity,
         imageUrl: pc.imageUrl,
         seriesMark: set.code || set.series || "",
-        regulationMark: set.regulationMark ?? exist.regulationMark,
+        regulationMark:
+          pc.regulationMark ?? set.regulationMark ?? exist.regulationMark,
+        evolutionStage: pc.evolutionStage ?? exist.evolutionStage,
       };
       const drifted =
         exist.name !== expected.name ||
         exist.rarity !== expected.rarity ||
         exist.imageUrl !== expected.imageUrl ||
         exist.seriesMark !== expected.seriesMark ||
-        exist.regulationMark !== expected.regulationMark;
+        exist.regulationMark !== expected.regulationMark ||
+        exist.evolutionStage !== expected.evolutionStage;
       if (drifted) onUpdate(exist.id, expected);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

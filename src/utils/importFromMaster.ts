@@ -14,9 +14,10 @@ export function pokemonCardToInput(
   return {
     name: card.name,
     seriesMark: set.code || set.series || "",
-    regulationMark: set.regulationMark ?? "H",
+    regulationMark: card.regulationMark ?? set.regulationMark ?? "H",
     number: numberLabel,
     rarity: card.rarity,
+    evolutionStage: card.evolutionStage,
     imageUrl: card.imageUrl,
     count: initialCount,
     sourceSetId: set.id,

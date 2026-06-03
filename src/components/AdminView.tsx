@@ -1,12 +1,18 @@
 import { useMemo, useState } from "react";
 import type {
   CardSet,
+  EvolutionStage,
   PokemonCard,
   Rarity,
   Region,
   RegulationMark,
 } from "../types";
-import { RARITY_LABEL, RARITY_ORDER, REGULATION_MARKS } from "../types";
+import {
+  EVOLUTION_STAGES,
+  RARITY_LABEL,
+  RARITY_ORDER,
+  REGULATION_MARKS,
+} from "../types";
 import { useSets } from "../hooks/useSets";
 import {
   applyPattern,
@@ -275,18 +281,28 @@ function SetEditor({
               id: `${set.id}-${String(r.card!.number!).padStart(3, "0")}`,
             }));
           if (valid.length === 0) return;
+
+          // 모든 행이 같은 마크면 세트 마크도 함께 동기화 (세트 마크가 비어있거나 다를 때).
+          const marks = new Set(
+            valid.map((c) => c.regulationMark).filter(Boolean) as RegulationMark[],
+          );
+          const consensusMark = marks.size === 1 ? [...marks][0] : undefined;
+          const patch: Partial<CardSet> = {};
+          if (consensusMark && set.regulationMark !== consensusMark) {
+            patch.regulationMark = consensusMark;
+          }
+
           if (mode === "replace") {
-            onPatch({ cards: valid });
+            patch.cards = valid;
           } else {
             const map = new Map<number, PokemonCard>();
             for (const c of set.cards) map.set(c.number, c);
             for (const c of valid) map.set(c.number, c);
-            onPatch({
-              cards: Array.from(map.values()).sort(
-                (a, b) => a.number - b.number,
-              ),
-            });
+            patch.cards = Array.from(map.values()).sort(
+              (a, b) => a.number - b.number,
+            );
           }
+          onPatch(patch);
         }}
         existingCount={set.cards.length}
       />
@@ -343,12 +359,12 @@ function TsvPasteBox({
     <div className="rounded-3xl bg-white p-5 shadow-card">
       <h3 className="text-[15px] font-extrabold">엑셀에서 붙여넣기</h3>
       <p className="mt-1 text-[12px] text-brand-gray">
-        탭 구분 (엑셀/시트 복사). 컬럼: 번호 · 이름 · 희귀도 · 시세 · 이미지URL · 일러스트
+        탭 구분 (엑셀/시트 복사). 컬럼: 번호 · 마크 · 이름 · 분류 · 레어도 · (옵션) 시세 · 이미지URL · 일러스트
       </p>
       <textarea
         value={text}
         onChange={(e) => setText(e.target.value)}
-        placeholder={`예시:\n001/080\t뚜벅쵸\tC\n002/080\t냄새꼬\tC\n003/080\t라플레시아\tU`}
+        placeholder={`예시:\n001/086\tI\t주리비얀\t기본 포켓몬\tC\n002/086\tI\t샤비\t1진화 포켓몬\tC`}
         className="mt-3 h-40 w-full rounded-2xl border border-brand-grayLight bg-brand-bg/40 p-3 font-mono text-[12px] outline-none focus:ring-2 focus:ring-brand-mint/40"
         spellCheck={false}
       />
@@ -544,11 +560,12 @@ function CardTableEditor({
         </p>
       ) : (
         <div className="mt-3 overflow-x-auto">
-          <table className="w-full min-w-[680px] text-[12px]">
+          <table className="w-full min-w-[780px] text-[12px]">
             <thead className="bg-brand-grayLight/60 text-brand-gray">
               <tr className="text-left">
                 <th className="w-20 px-2 py-2">번호</th>
                 <th className="px-2 py-2">이름</th>
+                <th className="w-24 px-2 py-2">분류</th>
                 <th className="w-24 px-2 py-2">희귀도</th>
                 <th className="w-28 px-2 py-2 text-right">시세(원)</th>
                 <th className="px-2 py-2">이미지 URL</th>
@@ -576,6 +593,27 @@ function CardTableEditor({
                         patchCard(c.id, { name: e.target.value })
                       }
                     />
+                  </td>
+                  <td className="px-2 py-1">
+                    <select
+                      className="w-full bg-transparent px-1 py-1 outline-none focus:bg-white"
+                      value={c.evolutionStage ?? ""}
+                      onChange={(e) =>
+                        patchCard(c.id, {
+                          evolutionStage:
+                            (e.target.value || undefined) as
+                              | EvolutionStage
+                              | undefined,
+                        })
+                      }
+                    >
+                      <option value="">-</option>
+                      {EVOLUTION_STAGES.map((s) => (
+                        <option key={s} value={s}>
+                          {s}
+                        </option>
+                      ))}
+                    </select>
                   </td>
                   <td className="px-2 py-1">
                     <select

@@ -1,5 +1,10 @@
-import type { PokemonCard, Rarity } from "../types";
-import { RARITY_LABEL, RARITY_ORDER } from "../types";
+import type {
+  EvolutionStage,
+  PokemonCard,
+  Rarity,
+  RegulationMark,
+} from "../types";
+import { RARITY_LABEL, RARITY_ORDER, REGULATION_MARKS } from "../types";
 
 export interface ParsedRow {
   rowIndex: number;
@@ -10,9 +15,10 @@ export interface ParsedRow {
 // 엑셀/구글시트에서 셀을 복사하면 행은 \n, 열은 \t로 구분됨.
 //
 // 컬럼 (왼쪽이 필수, 오른쪽으로 갈수록 옵션):
-//   번호 | 이름 | 희귀도 | 시세 | 이미지URL | 일러스트
+//   번호 | 마크 | 이름 | 분류 | 레어도 | 시세 | 이미지URL | 일러스트
 //
-// 번호 셀은 `001` 처럼 단순 숫자도 되고, `001/080` 처럼 "번호/총수" 형식도 인식.
+// 번호 셀은 `001` 처럼 단순 숫자도 되고, `001/086` 처럼 "번호/총수" 형식도 인식.
+// 마크는 D~J 한 글자. 분류는 "기본 포켓몬"/"1진화 포켓몬" 등을 EvolutionStage로 매핑.
 // 첫 행이 헤더면 자동으로 인식해서 스킵.
 export function parseClipboardTsv(text: string, setId: string): ParsedRow[] {
   if (!text) return [];
@@ -32,7 +38,16 @@ export function parseClipboardTsv(text: string, setId: string): ParsedRow[] {
     dataRow += 1;
 
     const cells = line.split("\t").map((c) => c.trim());
-    const [numberRaw, name, rarityRaw, priceRaw, imageUrl, illustrator] = cells;
+    const [
+      numberRaw,
+      markRaw,
+      name,
+      categoryRaw,
+      rarityRaw,
+      priceRaw,
+      imageUrl,
+      illustrator,
+    ] = cells;
 
     const number = parseCardNumber(numberRaw);
     if (!number || number <= 0) {
@@ -42,8 +57,27 @@ export function parseClipboardTsv(text: string, setId: string): ParsedRow[] {
       });
       continue;
     }
+
+    const regulationMark = parseRegulationMark(markRaw);
+    if (markRaw && !regulationMark) {
+      out.push({
+        rowIndex: dataRow,
+        error: `2열(마크)를 알 수 없어요: "${markRaw}". D~J 한 글자여야 해요.`,
+      });
+      continue;
+    }
+
     if (!name) {
-      out.push({ rowIndex: dataRow, error: "2열(이름)이 비어있어요" });
+      out.push({ rowIndex: dataRow, error: "3열(이름)이 비어있어요" });
+      continue;
+    }
+
+    const evolutionStage = parseEvolutionStage(categoryRaw);
+    if (categoryRaw && !evolutionStage) {
+      out.push({
+        rowIndex: dataRow,
+        error: `4열(분류)를 알 수 없어요: "${categoryRaw}". 기본 포켓몬/1진화 포켓몬/2진화 포켓몬/트레이너/에너지 사용.`,
+      });
       continue;
     }
 
@@ -51,7 +85,7 @@ export function parseClipboardTsv(text: string, setId: string): ParsedRow[] {
     if (!rarity) {
       out.push({
         rowIndex: dataRow,
-        error: `3열(희귀도)을 알 수 없어요: "${rarityRaw ?? ""}". C/U/R/RR/AR/SR/SAR/UR/MUR 또는 한글명 사용.`,
+        error: `5열(레어도)를 알 수 없어요: "${rarityRaw ?? ""}". C/U/R/RR/AR/SR/SAR/UR/MUR 또는 한글명 사용.`,
       });
       continue;
     }
@@ -68,6 +102,8 @@ export function parseClipboardTsv(text: string, setId: string): ParsedRow[] {
         number,
         name,
         rarity,
+        regulationMark: regulationMark ?? undefined,
+        evolutionStage: evolutionStage ?? undefined,
         marketPrice: Number.isFinite(marketPrice) ? marketPrice : 0,
         imageUrl: imageUrl || undefined,
         illustrator: illustrator || undefined,
@@ -86,10 +122,34 @@ function parseCardNumber(raw: string | undefined): number {
   return digits ? Number(digits) : 0;
 }
 
+// 첫 셀에 숫자가 없거나, 첫 셀이 "번호"/"넘버" 등 헤더 키워드면 헤더로 간주.
 function isHeaderRow(line: string): boolean {
   const first = line.split("\t")[0]?.trim() ?? "";
   if (!first) return false;
+  if (/넘버|번호|컬렉션/i.test(first)) return true;
   return !/\d/.test(first);
+}
+
+function parseRegulationMark(raw: string | undefined): RegulationMark | null {
+  if (!raw) return null;
+  const norm = raw.trim().toUpperCase();
+  if ((REGULATION_MARKS as string[]).includes(norm)) return norm as RegulationMark;
+  return null;
+}
+
+// "기본 포켓몬" → "기본". 트레이너/에너지 하위 구분은 모두 묶음.
+function parseEvolutionStage(raw: string | undefined): EvolutionStage | null {
+  if (!raw) return null;
+  const t = raw.trim();
+  const stripped = t.replace(/\s*포켓몬\s*$/, "").trim();
+  if (stripped === "기본") return "기본";
+  if (stripped === "1진화" || stripped === "1 진화") return "1진화";
+  if (stripped === "2진화" || stripped === "2 진화") return "2진화";
+  // 트레이너 계열: 굿즈/포켓몬의도구/스타디움/서포터/트레이너스
+  if (/트레이너|굿즈|도구|스타디움|서포터/.test(t)) return "트레이너";
+  // 에너지 계열: 기본 에너지/특수 에너지
+  if (/에너지/.test(t)) return "에너지";
+  return null;
 }
 
 function parseRarity(raw: string | undefined): Rarity | null {
