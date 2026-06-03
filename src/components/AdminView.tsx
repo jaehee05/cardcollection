@@ -560,10 +560,11 @@ function CardTableEditor({
         </p>
       ) : (
         <div className="mt-3 overflow-x-auto">
-          <table className="w-full min-w-[780px] text-[12px]">
+          <table className="w-full min-w-[840px] text-[12px]">
             <thead className="bg-brand-grayLight/60 text-brand-gray">
               <tr className="text-left">
                 <th className="w-20 px-2 py-2">번호</th>
+                <th className="w-16 px-2 py-2">마크</th>
                 <th className="px-2 py-2">이름</th>
                 <th className="w-24 px-2 py-2">분류</th>
                 <th className="w-24 px-2 py-2">희귀도</th>
@@ -584,6 +585,27 @@ function CardTableEditor({
                         patchCard(c.id, { number: v || c.number })
                       }
                     />
+                  </td>
+                  <td className="px-2 py-1">
+                    <select
+                      className="w-full bg-transparent px-1 py-1 outline-none focus:bg-white"
+                      value={c.regulationMark ?? ""}
+                      onChange={(e) =>
+                        patchCard(c.id, {
+                          regulationMark:
+                            (e.target.value || undefined) as
+                              | RegulationMark
+                              | undefined,
+                        })
+                      }
+                    >
+                      <option value="">-</option>
+                      {REGULATION_MARKS.map((m) => (
+                        <option key={m} value={m}>
+                          {m}
+                        </option>
+                      ))}
+                    </select>
                   </td>
                   <td className="px-2 py-1">
                     <input
