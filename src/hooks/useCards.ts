@@ -10,10 +10,22 @@ function load(): Card[] {
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
-    return parsed as Card[];
+    return (parsed as Card[]).map(migrateCard);
   } catch {
     return [];
   }
+}
+
+// "트레이너" → "트레이너스" 마이그레이션 (옛 저장본 호환).
+function migrateCard(c: Card): Card {
+  let next = c;
+  if ((next.type as string) === "트레이너") {
+    next = { ...next, type: "트레이너스" };
+  }
+  if ((next.evolutionStage as string) === "트레이너") {
+    next = { ...next, evolutionStage: "트레이너스" };
+  }
+  return next;
 }
 
 function save(cards: Card[]) {

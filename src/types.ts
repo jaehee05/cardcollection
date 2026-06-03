@@ -79,7 +79,7 @@ export interface PokemonCard {
   imageUrl?: string;
   // 행 단위 레귤레이션 마크(붙여넣기 검증용). 보통은 세트의 regulationMark와 동일.
   regulationMark?: RegulationMark;
-  // 카드 분류 — "기본"/"1진화"/"2진화"/"트레이너"/"에너지"
+  // 카드 분류 — "기본"/"1진화"/"2진화"/"트레이너스"/"에너지"
   evolutionStage?: EvolutionStage;
 }
 
@@ -109,7 +109,7 @@ export type CardType =
   | "강철"
   | "드래곤"
   | "무색"
-  | "트레이너"
+  | "트레이너스"
   | "에너지";
 
 export const CARD_TYPES: CardType[] = [
@@ -123,7 +123,7 @@ export const CARD_TYPES: CardType[] = [
   "강철",
   "드래곤",
   "무색",
-  "트레이너",
+  "트레이너스",
   "에너지",
 ];
 
@@ -131,14 +131,14 @@ export type EvolutionStage =
   | "기본"
   | "1진화"
   | "2진화"
-  | "트레이너"
+  | "트레이너스"
   | "에너지";
 
 export const EVOLUTION_STAGES: EvolutionStage[] = [
   "기본",
   "1진화",
   "2진화",
-  "트레이너",
+  "트레이너스",
   "에너지",
 ];
 

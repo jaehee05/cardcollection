@@ -64,9 +64,7 @@ function fromDoc(raw: DocumentData): CardSet {
       regulationMark: (c.regulationMark ?? undefined) as
         | RegulationMark
         | undefined,
-      evolutionStage: (c.evolutionStage ?? undefined) as
-        | EvolutionStage
-        | undefined,
+      evolutionStage: migrateStage(c.evolutionStage),
     })),
   };
 }
@@ -91,6 +89,13 @@ export function subscribeAllSets(
     },
     (err) => onError?.(err),
   );
+}
+
+// 옛 "트레이너" 저장본을 "트레이너스"로 변환해 읽음.
+function migrateStage(raw: unknown): EvolutionStage | undefined {
+  if (raw == null) return undefined;
+  if (raw === "트레이너") return "트레이너스";
+  return raw as EvolutionStage;
 }
 
 export async function upsertSet(set: CardSet): Promise<void> {

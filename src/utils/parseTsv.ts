@@ -76,7 +76,7 @@ export function parseClipboardTsv(text: string, setId: string): ParsedRow[] {
     if (categoryRaw && !evolutionStage) {
       out.push({
         rowIndex: dataRow,
-        error: `4열(분류)를 알 수 없어요: "${categoryRaw}". 기본 포켓몬/1진화 포켓몬/2진화 포켓몬/트레이너/에너지 사용.`,
+        error: `4열(분류)를 알 수 없어요: "${categoryRaw}". 기본 포켓몬/1진화 포켓몬/2진화 포켓몬/트레이너스/에너지 사용.`,
       });
       continue;
     }
@@ -137,7 +137,7 @@ function parseRegulationMark(raw: string | undefined): RegulationMark | null {
   return null;
 }
 
-// "기본 포켓몬" → "기본". 트레이너/에너지 하위 구분은 모두 묶음.
+// "기본 포켓몬" → "기본". 트레이너스/에너지 하위 구분은 모두 묶음.
 function parseEvolutionStage(raw: string | undefined): EvolutionStage | null {
   if (!raw) return null;
   const t = raw.trim();
@@ -145,8 +145,8 @@ function parseEvolutionStage(raw: string | undefined): EvolutionStage | null {
   if (stripped === "기본") return "기본";
   if (stripped === "1진화" || stripped === "1 진화") return "1진화";
   if (stripped === "2진화" || stripped === "2 진화") return "2진화";
-  // 트레이너 계열: 굿즈/포켓몬의도구/스타디움/서포터/트레이너스
-  if (/트레이너|굿즈|도구|스타디움|서포터/.test(t)) return "트레이너";
+  // 트레이너스 계열: 굿즈/포켓몬의도구/스타디움/서포터/트레이너
+  if (/트레이너|굿즈|도구|스타디움|서포터/.test(t)) return "트레이너스";
   // 에너지 계열: 기본 에너지/특수 에너지
   if (/에너지/.test(t)) return "에너지";
   return null;
