@@ -1,15 +1,42 @@
-export type Region = "kr" | "us" | "jp";
+// 레귤레이션 마크 — 카드 좌하단 알파벳 한 글자.
+// 한국 기준 현 스탠다드는 G·H·I (2026). D·E·F는 익스팬션 전용.
+export type RegulationMark = "D" | "E" | "F" | "G" | "H" | "I" | "J";
+
+export const REGULATION_MARKS: RegulationMark[] = [
+  "D",
+  "E",
+  "F",
+  "G",
+  "H",
+  "I",
+  "J",
+];
+
+// 현재 스탠다드 합법 마크 (덱 합법성 표시용)
+export const STANDARD_LEGAL_MARKS: RegulationMark[] = ["G", "H", "I"];
 
 export type Rarity =
-  | "C" // 커먼
-  | "U" // 언커먼
-  | "R" // 레어
-  | "RR" // 더블레어
-  | "AR" // 아트레어
-  | "SR" // 슈퍼레어
-  | "SAR" // 스페셜 아트레어
-  | "UR" // 울트라레어
-  | "MUR"; // 메가 울트라레어
+  | "C"
+  | "U"
+  | "R"
+  | "RR"
+  | "AR"
+  | "SR"
+  | "SAR"
+  | "UR"
+  | "MUR";
+
+export const RARITIES: Rarity[] = [
+  "C",
+  "U",
+  "R",
+  "RR",
+  "AR",
+  "SR",
+  "SAR",
+  "UR",
+  "MUR",
+];
 
 export const RARITY_LABEL: Record<Rarity, string> = {
   C: "커먼",
@@ -23,18 +50,6 @@ export const RARITY_LABEL: Record<Rarity, string> = {
   MUR: "메가 울트라레어",
 };
 
-export const RARITY_ORDER: Rarity[] = [
-  "C",
-  "U",
-  "R",
-  "RR",
-  "AR",
-  "SR",
-  "SAR",
-  "UR",
-  "MUR",
-];
-
 export const RARITY_COLOR: Record<Rarity, string> = {
   C: "#A9A5B5",
   U: "#7BC74D",
@@ -47,35 +62,88 @@ export const RARITY_COLOR: Record<Rarity, string> = {
   MUR: "#C9362C",
 };
 
-export interface PokemonCard {
+export type CardType =
+  | "풀"
+  | "불꽃"
+  | "물"
+  | "번개"
+  | "초"
+  | "격투"
+  | "악"
+  | "강철"
+  | "드래곤"
+  | "무색"
+  | "트레이너"
+  | "에너지";
+
+export const CARD_TYPES: CardType[] = [
+  "풀",
+  "불꽃",
+  "물",
+  "번개",
+  "초",
+  "격투",
+  "악",
+  "강철",
+  "드래곤",
+  "무색",
+  "트레이너",
+  "에너지",
+];
+
+export type EvolutionStage =
+  | "기본"
+  | "1진화"
+  | "2진화"
+  | "트레이너"
+  | "에너지";
+
+export const EVOLUTION_STAGES: EvolutionStage[] = [
+  "기본",
+  "1진화",
+  "2진화",
+  "트레이너",
+  "에너지",
+];
+
+// 개인 보유 카드 (인벤토리 한 항목)
+export interface Card {
   id: string;
-  setId: string;
-  number: number; // 1-based number within set
   name: string;
-  rarity: Rarity;
-  illustrator?: string;
-  // KRW market price (admin-entered)
-  marketPrice: number;
-  // optional override image URL — when missing, we render a placeholder SVG
+  seriesMark: string; // 자유 입력 — 예: "SV10", "sv7a", "SM1"
+  regulationMark: RegulationMark;
+  number?: string; // "001/108" 또는 "001" — 자유 형식
+  rarity?: Rarity;
+  type?: CardType;
+  hp?: number;
+  evolutionStage?: EvolutionStage;
   imageUrl?: string;
-}
-
-export interface CardSet {
-  id: string;
-  region: Region;
-  code: string; // e.g. SV10, sv7a
-  name: string;
-  series: string;
-  releaseDate: string; // ISO
-  totalCards: number; // not counting secret
-  secretCards: number;
-  coverImageUrl?: string;
-  cards: PokemonCard[];
-}
-
-export interface CardOwnership {
-  count: number;
+  count: number; // 보유 수량
   note?: string;
+  createdAt: string; // ISO
+  updatedAt: string; // ISO
 }
-// keyed by card.id
-export type OwnershipMap = Record<string, CardOwnership>;
+
+// 덱 내 카드 한 줄
+export interface DeckCard {
+  cardId: string;
+  count: number; // 덱 내 매수
+}
+
+// 저장된 덱
+export interface Deck {
+  id: string;
+  name: string;
+  cards: DeckCard[];
+  note?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// JSON 백업 포맷
+export interface BackupV1 {
+  schema: "cardcollection.v1";
+  exportedAt: string;
+  cards: Card[];
+  decks: Deck[];
+}

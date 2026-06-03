@@ -1,19 +1,16 @@
-import type { PokemonCard } from "../types";
-
 interface Props {
-  card: PokemonCard;
+  name: string;
+  number?: string;
   className?: string;
 }
 
-// 실제 카드 이미지가 없을 때 표시하는 "NO IMAGE" 플레이스홀더.
-// 실제 카드 이미지(보통 5:7 비율)와 동일한 viewBox를 사용해 동일 사이즈로 렌더된다.
-export function CardPlaceholder({ card, className }: Props) {
+export function CardPlaceholder({ name, number, className }: Props) {
   return (
     <svg
       viewBox="0 0 240 336"
       className={className}
       role="img"
-      aria-label={`${card.name} 이미지 없음`}
+      aria-label={`${name} 이미지 없음`}
     >
       <rect width="240" height="336" rx="14" fill="#E9E7F0" />
       <rect
@@ -45,7 +42,7 @@ export function CardPlaceholder({ card, className }: Props) {
         fill="#C0BCCC"
         textAnchor="middle"
       >
-        {String(card.number).padStart(3, "0")} · {truncate(card.name, 14)}
+        {number ? `${number} · ` : ""}{truncate(name, 14)}
       </text>
     </svg>
   );
