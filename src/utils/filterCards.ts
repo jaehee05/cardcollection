@@ -20,6 +20,15 @@ export function applyFilters(cards: Card[], f: FilterState): Card[] {
   return out;
 }
 
+// Card.number는 "001/108" 또는 "001" 같은 자유 형식. 앞쪽 숫자만 추출.
+// sourceNumber(마스터 DB 링크)가 있으면 그걸 우선 사용.
+function cardNumberValue(c: Card): number {
+  if (typeof c.sourceNumber === "number") return c.sourceNumber;
+  const raw = c.number?.split("/")[0]?.replace(/[^0-9]/g, "");
+  const n = raw ? Number(raw) : NaN;
+  return Number.isFinite(n) ? n : Number.POSITIVE_INFINITY;
+}
+
 export function sortCards(cards: Card[], sort: SortKey): Card[] {
   const arr = [...cards];
   switch (sort) {
@@ -34,6 +43,21 @@ export function sortCards(cards: Card[], sort: SortKey): Card[] {
         const ai = REGULATION_MARKS.indexOf(a.regulationMark);
         const bi = REGULATION_MARKS.indexOf(b.regulationMark);
         if (ai !== bi) return bi - ai; // 최신 알파벳이 앞으로
+        return a.name.localeCompare(b.name, "ko");
+      });
+      break;
+    case "numberAsc":
+      arr.sort((a, b) => {
+        // 시리즈마크가 다르면 시리즈로 그룹핑 (자연 정렬), 같으면 번호로
+        if (a.seriesMark !== b.seriesMark) {
+          return a.seriesMark.localeCompare(b.seriesMark, "ko", {
+            numeric: true,
+            sensitivity: "base",
+          });
+        }
+        const an = cardNumberValue(a);
+        const bn = cardNumberValue(b);
+        if (an !== bn) return an - bn;
         return a.name.localeCompare(b.name, "ko");
       });
       break;

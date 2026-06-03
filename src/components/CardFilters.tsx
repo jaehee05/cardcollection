@@ -1,7 +1,12 @@
 import type { CardType, Rarity, RegulationMark } from "../types";
 import { CARD_TYPES, RARITIES, REGULATION_MARKS } from "../types";
 
-export type SortKey = "createdDesc" | "nameAsc" | "countDesc" | "regulation";
+export type SortKey =
+  | "createdDesc"
+  | "nameAsc"
+  | "countDesc"
+  | "regulation"
+  | "numberAsc";
 
 export interface FilterState {
   q: string;
@@ -50,6 +55,7 @@ export function CardFilters({ value, onChange, seriesOptions }: Props) {
             onChange={(e) => patch({ sort: e.target.value as SortKey })}
           >
             <option value="createdDesc">최근 추가순</option>
+            <option value="numberAsc">번호순 (시리즈별)</option>
             <option value="nameAsc">이름순</option>
             <option value="countDesc">보유 많은순</option>
             <option value="regulation">레귤레이션순</option>
