@@ -24,6 +24,7 @@ export type Rarity =
   | "SR"
   | "SAR"
   | "UR"
+  | "BWR"
   | "MUR";
 
 export const RARITIES: Rarity[] = [
@@ -35,6 +36,7 @@ export const RARITIES: Rarity[] = [
   "SR",
   "SAR",
   "UR",
+  "BWR",
   "MUR",
 ];
 
@@ -47,6 +49,7 @@ export const RARITY_LABEL: Record<Rarity, string> = {
   SR: "슈퍼레어",
   SAR: "스페셜 아트",
   UR: "울트라레어",
+  BWR: "블랙 화이트 레어",
   MUR: "메가 울트라레어",
 };
 
@@ -59,6 +62,7 @@ export const RARITY_COLOR: Record<Rarity, string> = {
   SR: "#F8C530",
   SAR: "#F08030",
   UR: "#E55D87",
+  BWR: "#1B1B1B",
   MUR: "#C9362C",
 };
 
