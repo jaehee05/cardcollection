@@ -13,6 +13,7 @@ interface Props {
   onUpdate: (id: string, patch: Partial<CardInput>) => void;
   onDelete: (id: string) => void;
   onAdjust: (id: string, delta: number) => void;
+  onOpenSeriesAdd: () => void;
 }
 
 type Mode =
@@ -26,6 +27,7 @@ export function InventoryView({
   onUpdate,
   onDelete,
   onAdjust,
+  onOpenSeriesAdd,
 }: Props) {
   const [mode, setMode] = useState<Mode>({ kind: "list" });
   const [filters, setFilters] = useState<FilterState>(DEFAULT_FILTERS);
@@ -69,13 +71,23 @@ export function InventoryView({
           종류 <span className="text-brand-mintDark">{totalUnique}</span> · 총 매수{" "}
           <span className="text-brand-mintDark">{totalOwned}</span>
         </div>
-        <button
-          type="button"
-          onClick={() => setMode({ kind: "create" })}
-          className="rounded-full bg-brand-mint px-4 py-2 text-[13px] font-extrabold text-white shadow-sm hover:bg-brand-mintDark"
-        >
-          + 카드 추가
-        </button>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={onOpenSeriesAdd}
+            className="rounded-full bg-brand-purple px-4 py-2 text-[13px] font-extrabold text-white shadow-sm hover:opacity-90"
+            title="마스터 DB의 시리즈에서 카드 한 번에 추가"
+          >
+            ＋ 시리즈에서
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode({ kind: "create" })}
+            className="rounded-full bg-brand-mint px-4 py-2 text-[13px] font-extrabold text-white shadow-sm hover:bg-brand-mintDark"
+          >
+            + 직접 추가
+          </button>
+        </div>
       </div>
 
       <CardFilters

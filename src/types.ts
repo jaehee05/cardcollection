@@ -62,6 +62,38 @@ export const RARITY_COLOR: Record<Rarity, string> = {
   MUR: "#C9362C",
 };
 
+// 마스터 DB 정렬용 alias — RARITIES와 동일
+export const RARITY_ORDER: Rarity[] = RARITIES;
+
+// 마스터 DB (Firestore `sets` 컬렉션) 관련 타입
+export type Region = "kr" | "us" | "jp";
+
+export interface PokemonCard {
+  id: string;
+  setId: string;
+  number: number; // 1-based, totalCards 이하면 인쇄번호 / 초과면 시크릿
+  name: string;
+  rarity: Rarity;
+  illustrator?: string;
+  marketPrice: number; // KRW
+  imageUrl?: string;
+}
+
+export interface CardSet {
+  id: string;
+  region: Region;
+  code: string; // 예: SV10, sv7a — 시리즈마크로 사용
+  name: string;
+  series: string;
+  releaseDate: string; // ISO
+  totalCards: number; // 인쇄(non-secret) 카드 수
+  secretCards: number;
+  // 카드별 레귤레이션 마크는 카드에 두지 않고, 세트 단위로 둠 (한 세트는 한 레귤)
+  regulationMark?: RegulationMark;
+  coverImageUrl?: string;
+  cards: PokemonCard[];
+}
+
 export type CardType =
   | "풀"
   | "불꽃"
@@ -122,6 +154,10 @@ export interface Card {
   note?: string;
   createdAt: string; // ISO
   updatedAt: string; // ISO
+  // 마스터 DB(sets)에서 가져온 카드일 때 set ID 와 번호.
+  // 같은 카드를 중복 추가하지 않기 위한 키.
+  sourceSetId?: string;
+  sourceNumber?: number;
 }
 
 // 덱 내 카드 한 줄
