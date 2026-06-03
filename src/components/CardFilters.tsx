@@ -1,5 +1,15 @@
-import type { CardType, Rarity, RegulationMark } from "../types";
-import { CARD_TYPES, RARITIES, REGULATION_MARKS } from "../types";
+import type {
+  CardType,
+  EvolutionStage,
+  Rarity,
+  RegulationMark,
+} from "../types";
+import {
+  CARD_TYPES,
+  EVOLUTION_STAGES,
+  RARITIES,
+  REGULATION_MARKS,
+} from "../types";
 
 export type SortKey =
   | "createdDesc"
@@ -14,6 +24,7 @@ export interface FilterState {
   regulation: RegulationMark | "";
   rarity: Rarity | "";
   type: CardType | "";
+  stage: EvolutionStage | "";
   onlyOwned: boolean;
   sort: SortKey;
 }
@@ -24,6 +35,7 @@ export const DEFAULT_FILTERS: FilterState = {
   regulation: "",
   rarity: "",
   type: "",
+  stage: "",
   onlyOwned: false,
   sort: "createdDesc",
 };
@@ -120,6 +132,23 @@ export function CardFilters({ value, onChange, seriesOptions }: Props) {
           {CARD_TYPES.map((t) => (
             <option key={t} value={t}>
               {t}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
+        <select
+          className="input-base"
+          value={value.stage}
+          onChange={(e) =>
+            patch({ stage: e.target.value as EvolutionStage | "" })
+          }
+        >
+          <option value="">분류 전체</option>
+          {EVOLUTION_STAGES.map((s) => (
+            <option key={s} value={s}>
+              {s}
             </option>
           ))}
         </select>

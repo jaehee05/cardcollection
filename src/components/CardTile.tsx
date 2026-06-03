@@ -66,7 +66,12 @@ export function CardTile({ card, onEdit, onDelete, onAdjust, deckMode }: Props) 
         <div className="line-clamp-2 text-[13px] font-extrabold leading-tight text-[#2A2538]">
           {card.name}
         </div>
-        <div className="mt-0.5 flex items-center gap-1.5 text-[10px] font-bold text-brand-gray">
+        <div className="mt-0.5 flex flex-wrap items-center gap-1 text-[10px] font-bold text-brand-gray">
+          {card.evolutionStage && (
+            <span className="rounded bg-brand-grayLight/80 px-1 py-px text-[9px] font-extrabold text-[#4A4658]">
+              {card.evolutionStage}
+            </span>
+          )}
           {card.seriesMark && <span>{card.seriesMark}</span>}
           {card.number && <span>· {card.number}</span>}
         </div>

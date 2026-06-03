@@ -8,7 +8,7 @@ import {
   type DocumentData,
 } from "firebase/firestore";
 import { db } from "../firebase";
-import type { CardSet, RegulationMark } from "../types";
+import type { CardSet, EvolutionStage, RegulationMark } from "../types";
 
 const COLLECTION = "sets";
 
@@ -33,6 +33,8 @@ function toDoc(set: CardSet): DocumentData {
       illustrator: c.illustrator ?? null,
       marketPrice: c.marketPrice ?? 0,
       imageUrl: c.imageUrl ?? null,
+      regulationMark: c.regulationMark ?? null,
+      evolutionStage: c.evolutionStage ?? null,
     })),
     updatedAt: serverTimestamp(),
   };
@@ -59,6 +61,12 @@ function fromDoc(raw: DocumentData): CardSet {
       illustrator: c.illustrator ?? undefined,
       marketPrice: c.marketPrice ?? 0,
       imageUrl: c.imageUrl ?? undefined,
+      regulationMark: (c.regulationMark ?? undefined) as
+        | RegulationMark
+        | undefined,
+      evolutionStage: (c.evolutionStage ?? undefined) as
+        | EvolutionStage
+        | undefined,
     })),
   };
 }

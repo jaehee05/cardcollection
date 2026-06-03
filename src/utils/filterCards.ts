@@ -13,6 +13,7 @@ export function applyFilters(cards: Card[], f: FilterState): Card[] {
     if (f.regulation && c.regulationMark !== f.regulation) return false;
     if (f.rarity && c.rarity !== f.rarity) return false;
     if (f.type && c.type !== f.type) return false;
+    if (f.stage && c.evolutionStage !== f.stage) return false;
     if (f.onlyOwned && c.count <= 0) return false;
     return true;
   });
